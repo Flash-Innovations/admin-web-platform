@@ -47,6 +47,26 @@ export const superAdminService = {
   },
 
   /**
+   * Direct Create / Provision a new Institution from SuperAdmin
+   */
+  async createInstitution(institutionData) {
+    return api.post('/api/super-admin/colleges/create', {
+      ...institutionData,
+      loginUrl: institutionData.loginUrl || 'http://localhost:5174/login'
+    });
+  },
+
+  /**
+   * Resend or regenerate credentials for an approved institution
+   */
+  async resendCredentials(id, { tempPassword, loginUrl } = {}) {
+    return api.post(`/api/super-admin/colleges/${id}/resend-credentials`, {
+      tempPassword,
+      loginUrl: loginUrl || 'http://localhost:5174/login'
+    });
+  },
+
+  /**
    * Toggle active/inactive status of an approved college
    */
   async toggleCollegeStatus(id) {
