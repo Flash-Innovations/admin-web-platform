@@ -21,6 +21,7 @@ import { useNotifications } from "../../context/NotificationContext";
 import { Card } from "../../components/common/Card";
 import { Button } from "../../components/common/Button";
 import { Badge } from "../../components/common/Badge";
+import { CardGridSkeleton } from "../../components/common/LoadingSkeleton";
 
 export function InstitutionsDirectoryPage() {
   const { showSuccess, showError } = useNotifications();
@@ -130,10 +131,7 @@ export function InstitutionsDirectoryPage() {
 
       {/* Directory Grid */}
       {loading ? (
-        <div className="p-16 text-center text-slate-400 text-sm">
-          <RefreshCw className="w-8 h-8 animate-spin mx-auto mb-3 text-purple-600" />
-          Loading institutions...
-        </div>
+        <CardGridSkeleton count={6} />
       ) : colleges.length === 0 ? (
         <Card padding="p-16" className="text-center">
           <Building2 className="w-12 h-12 text-slate-300 mx-auto mb-3" />

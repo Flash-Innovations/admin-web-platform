@@ -23,11 +23,12 @@ const CollegeApprovalsPage = lazyNamed(() => import("../pages/superadmin/College
 const InstitutionsDirectoryPage = lazyNamed(() => import("../pages/superadmin/InstitutionsDirectoryPage"), "InstitutionsDirectoryPage");
 const GlobalQuestionBankPage = lazyNamed(() => import("../pages/superadmin/GlobalQuestionBankPage"), "GlobalQuestionBankPage");
 
+import { PageSkeleton } from "../components/common/LoadingSkeleton";
+
 function RouteLoadingFallback() {
   return (
-    <div className="min-h-[60vh] flex flex-col items-center justify-center p-6">
-      <div className="w-8 h-8 rounded-full border-2 border-indigo-600 border-t-transparent animate-spin mb-3" />
-      <span className="text-xs font-mono font-semibold text-slate-500">Loading platform admin module...</span>
+    <div className="p-6 max-w-7xl mx-auto">
+      <PageSkeleton />
     </div>
   );
 }

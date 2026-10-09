@@ -28,6 +28,7 @@ import {
 import { superAdminService } from "../../services/superAdminService";
 import { useNotifications } from "../../context/NotificationContext";
 import { Card } from "../../components/common/Card";
+import { TableSkeleton, Skeleton } from "../../components/common/LoadingSkeleton";
 import { Button } from "../../components/common/Button";
 import { Badge } from "../../components/common/Badge";
 import { Modal } from "../../components/common/Modal";
@@ -310,9 +311,28 @@ export function CollegeApprovalsPage() {
 
       {/* Colleges List */}
       {loading ? (
-        <div className="min-h-[40vh] flex flex-col items-center justify-center p-8 bg-white rounded-2xl border border-slate-200">
-          <div className="w-8 h-8 rounded-full border-2 border-indigo-600 border-t-transparent animate-spin mb-3" />
-          <span className="text-xs font-semibold text-slate-500">Loading institution records...</span>
+        <div className="space-y-4">
+          {[1, 2, 3, 4].map((i) => (
+            <Card key={i} className="p-6">
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div className="space-y-2 flex-1">
+                  <div className="flex items-center gap-3">
+                    <Skeleton className="h-6 w-48 rounded-md" />
+                    <Skeleton className="h-5 w-20 rounded-full" />
+                  </div>
+                  <Skeleton className="h-4 w-72 rounded" />
+                  <div className="flex items-center gap-4 pt-1">
+                    <Skeleton className="h-3 w-32 rounded" />
+                    <Skeleton className="h-3 w-28 rounded" />
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Skeleton className="h-9 w-24 rounded-xl" />
+                  <Skeleton className="h-9 w-24 rounded-xl" />
+                </div>
+              </div>
+            </Card>
+          ))}
         </div>
       ) : colleges.length === 0 ? (
         <Card className="p-12 text-center bg-slate-50/50">

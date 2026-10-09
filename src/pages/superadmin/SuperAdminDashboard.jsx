@@ -21,6 +21,7 @@ import { useNotifications } from "../../context/NotificationContext";
 import { Card, CardHeader } from "../../components/common/Card";
 import { Button } from "../../components/common/Button";
 import { Badge } from "../../components/common/Badge";
+import { TableSkeleton } from "../../components/common/LoadingSkeleton";
 
 export function SuperAdminDashboard() {
   const { showSuccess, showError } = useNotifications();
@@ -179,9 +180,8 @@ export function SuperAdminDashboard() {
             </div>
 
             {loading ? (
-              <div className="p-12 text-center text-slate-400 text-sm">
-                <RefreshCw className="w-6 h-6 animate-spin mx-auto mb-2 text-indigo-600" />
-                Loading pending queue...
+              <div className="p-4">
+                <TableSkeleton rows={4} cols={3} />
               </div>
             ) : pendingColleges.length === 0 ? (
               <div className="p-12 text-center text-slate-500">

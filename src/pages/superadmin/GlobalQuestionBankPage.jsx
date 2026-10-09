@@ -34,6 +34,7 @@ import { useNotifications } from "../../context/NotificationContext";
 import { Card } from "../../components/common/Card";
 import { Button } from "../../components/common/Button";
 import { Badge } from "../../components/common/Badge";
+import { Skeleton } from "../../components/common/LoadingSkeleton";
 import { ProblemStatement } from "../../components/common/ProblemStatement";
 
 export function GlobalQuestionBankPage() {
@@ -471,9 +472,26 @@ export function GlobalQuestionBankPage() {
 
       {/* Questions List */}
       {loading ? (
-        <div className="p-16 text-center text-slate-400 text-sm">
-          <RefreshCw className="w-8 h-8 animate-spin mx-auto mb-3 text-purple-600" />
-          Loading questions from database...
+        <div className="space-y-3">
+          {[1, 2, 3, 4, 5, 6].map((i) => (
+            <Card key={i} className="p-4">
+              <div className="flex items-center justify-between gap-4">
+                <div className="space-y-2 flex-1">
+                  <div className="flex items-center gap-3">
+                    <Skeleton className="h-5 w-5 rounded" />
+                    <Skeleton className="h-5 w-64 rounded-md" />
+                    <Skeleton className="h-4 w-16 rounded-full" />
+                  </div>
+                  <div className="flex items-center gap-3 pl-8">
+                    <Skeleton className="h-3.5 w-24 rounded" />
+                    <Skeleton className="h-3.5 w-20 rounded" />
+                    <Skeleton className="h-3.5 w-32 rounded" />
+                  </div>
+                </div>
+                <Skeleton className="h-8 w-20 rounded-lg" />
+              </div>
+            </Card>
+          ))}
         </div>
       ) : questions.length === 0 ? (
         <Card padding="p-16" className="text-center shadow-sm">
