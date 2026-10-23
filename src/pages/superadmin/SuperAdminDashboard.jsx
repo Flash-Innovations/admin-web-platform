@@ -1,288 +1,397 @@
 import React, { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import {
   ShieldCheck,
-  Building2,
   Users,
-  CheckCircle2,
-  Clock,
+  Trophy,
+  MessageSquare,
   BookOpen,
   ArrowRight,
   Sparkles,
-  AlertTriangle,
   RefreshCw,
-  ExternalLink,
-  Code2,
-  HelpCircle,
-  FileCheck2
+  CreditCard,
+  TrendingUp,
+  FileText,
+  Building2,
+  Calendar,
+  CheckCircle2,
+  Lock,
+  Plus
 } from "lucide-react";
-import { superAdminService } from "../../services/superAdminService";
+import { adminService } from "../../services/adminService";
 import { useNotifications } from "../../context/NotificationContext";
 import { Card, CardHeader } from "../../components/common/Card";
 import { Button } from "../../components/common/Button";
 import { Badge } from "../../components/common/Badge";
+import { StatCard } from "../../components/common/StatCard";
 import { TableSkeleton } from "../../components/common/LoadingSkeleton";
 
 export function SuperAdminDashboard() {
-  const { showSuccess, showError } = useNotifications();
+  const { showError, showSuccess } = useNotifications();
   const navigate = useNavigate();
 
-  const [stats, setStats] = useState({
-    totalInstitutions: 0,
-    pendingApprovals: 0,
-    activeInstitutions: 0,
-    rejectedInstitutions: 0,
-    totalDepartments: 0,
-    totalStudents: 0
-  });
-  const [pendingColleges, setPendingColleges] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [data, setData] = useState({
+    totalStudents: 0,
+    batch2028Count: 0,
+    batch2028Percent: 0,
+    subscribers: { free: 0, basic: 0, premium: 0, totalPaid: 0 },
+    financials: { totalGmv: 0, netRevenue: 0, totalGst: 0, mrrEstimate: 0, paidTransactionsCount: 0 },
+    operations: { activeContests: 0, upcomingContests: 0, totalGdRooms: 0, activeGdRooms: 0 },
+    recentTransactions: [],
+    topColleges: []
+  });
 
-  const loadDashboard = async () => {
+  const loadOverview = async () => {
     try {
       setLoading(true);
-      const [statsRes, pendingRes] = await Promise.all([
-        superAdminService.getStats().catch(() => ({ stats: {} })),
-        superAdminService.getPendingColleges().catch(() => ({ colleges: [] }))
-      ]);
-
-      if (statsRes.stats) setStats(statsRes.stats);
-      if (pendingRes.colleges) setPendingColleges(pendingRes.colleges.slice(0, 5));
+      const res = await adminService.getOverview();
+      if (res.success && res.stats) {
+        setData(res.stats);
+      }
     } catch (err) {
-      console.error("Super admin dashboard load error:", err);
-      showError("Failed to load dashboard metrics");
+      console.error("Failed to load superadmin overview:", err);
+      showError("Could not connect to B2C Command Center backend.");
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    loadDashboard();
+    loadOverview();
   }, []);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 pb-12">
       {/* Header Banner */}
-      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-slate-900 via-purple-950 to-slate-900 text-white p-6 sm:p-8 shadow-xl">
-        <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div className="space-y-1.5">
-            <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-purple-500/20 text-purple-300 text-xs font-semibold border border-purple-400/20">
+      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-slate-950 via-indigo-950 to-slate-900 text-white p-6 sm:p-8 shadow-2xl border border-indigo-900/40">
+        <div className="absolute right-0 top-0 w-96 h-96 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none" />
+        <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+          <div className="space-y-2 max-w-2xl">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/20 text-indigo-300 text-xs font-bold border border-indigo-500/30">
               <ShieldCheck className="w-3.5 h-3.5" />
-              SIPS Root Super Administrator
+              Flash B2C Platform Master Command Center
             </div>
-            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
-              Platform Master Console
+            <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-white">
+              Root Super Administrator Console
             </h1>
-            <p className="text-sm text-slate-300 max-w-xl">
-              Verify institution registrations, dispatch portal credentials, and govern universal global question banks across all campus tenants.
+            <p className="text-sm text-slate-300 leading-relaxed">
+              Live governance for universal Contests, Group Discussion Arenas, Question Banks, and 4-Pillar Investor & Partnership Reports with strict Zero-PII privacy.
             </p>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex flex-wrap items-center gap-2.5">
             <Button
               variant="outline"
               size="sm"
               icon={RefreshCw}
-              onClick={loadDashboard}
+              onClick={loadOverview}
               loading={loading}
-              className="border-slate-700 text-slate-200 hover:bg-slate-800"
+              className="border-slate-700 bg-slate-900/60 text-slate-200 hover:bg-slate-800"
             >
-              Refresh
+              Refresh Telemetry
             </Button>
             <Button
               variant="primary"
               size="sm"
-              icon={BookOpen}
-              onClick={() => navigate("/super-admin/questions")}
-              className="bg-purple-600 hover:bg-purple-700 text-white"
+              icon={FileText}
+              onClick={() => navigate("/super-admin/reports")}
+              className="bg-indigo-600 hover:bg-indigo-500 text-white shadow-lg shadow-indigo-600/30"
             >
-              Global Questions
+              4-Pillar Reports
             </Button>
           </div>
         </div>
       </div>
 
-      {/* KPI Metrics */}
+      {/* Primary Pulse KPIs */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {/* Pending Approvals */}
-        <Card className="p-5 flex items-center gap-4 border-amber-200/60 bg-gradient-to-br from-amber-50/40 to-white">
-          <div className="w-12 h-12 rounded-xl bg-amber-100 flex items-center justify-center text-amber-700 shrink-0">
-            <Clock className="w-6 h-6" />
-          </div>
-          <div>
-            <p className="text-xs font-bold uppercase tracking-wider text-amber-700">Pending Approvals</p>
-            <p className="text-2xl font-black text-slate-900">{stats.pendingApprovals}</p>
-            <p className="text-[11px] text-slate-500">Colleges requesting access</p>
-          </div>
-        </Card>
-
-        {/* Active Colleges */}
-        <Card className="p-5 flex items-center gap-4">
-          <div className="w-12 h-12 rounded-xl bg-emerald-50 flex items-center justify-center text-emerald-600 shrink-0">
-            <Building2 className="w-6 h-6" />
-          </div>
-          <div>
-            <p className="text-xs font-bold uppercase tracking-wider text-slate-400">Active Colleges</p>
-            <p className="text-2xl font-black text-slate-900">{stats.activeInstitutions}</p>
-            <p className="text-[11px] text-slate-500">Operational campus tenants</p>
-          </div>
-        </Card>
-
-        {/* Academic Departments */}
-        <Card className="p-5 flex items-center gap-4">
-          <div className="w-12 h-12 rounded-xl bg-indigo-50 flex items-center justify-center text-indigo-600 shrink-0">
-            <FileCheck2 className="w-6 h-6" />
-          </div>
-          <div>
-            <p className="text-xs font-bold uppercase tracking-wider text-slate-400">Total Departments</p>
-            <p className="text-2xl font-black text-slate-900">{stats.totalDepartments}</p>
-            <p className="text-[11px] text-slate-500">Provisioned departmental units</p>
-          </div>
-        </Card>
-
         {/* Total Students */}
-        <Card className="p-5 flex items-center gap-4">
-          <div className="w-12 h-12 rounded-xl bg-purple-50 flex items-center justify-center text-purple-600 shrink-0">
-            <Users className="w-6 h-6" />
-          </div>
-          <div>
-            <p className="text-xs font-bold uppercase tracking-wider text-slate-400">Total Candidates</p>
-            <p className="text-2xl font-black text-slate-900">{stats.totalStudents}</p>
-            <p className="text-[11px] text-slate-500">Across all institutions</p>
-          </div>
-        </Card>
+        <StatCard
+          title="Total Registered Students"
+          value={data.totalStudents.toLocaleString()}
+          subtitle={`${data.batch2028Percent}% Batch 2028 Target Cohort`}
+          icon={Users}
+          iconBg="bg-indigo-50 text-indigo-600"
+          trend={{
+            value: `${data.batch2028Count} in '28`,
+            direction: "up",
+            label: "Core audience"
+          }}
+        />
+
+        {/* Paid Subscribers */}
+        <StatCard
+          title="Active Paid Subscribers"
+          value={data.subscribers.totalPaid.toLocaleString()}
+          subtitle={`Basic: ${data.subscribers.basic} | Premium: ${data.subscribers.premium}`}
+          icon={CreditCard}
+          iconBg="bg-emerald-50 text-emerald-600"
+          trend={{
+            value: data.totalStudents > 0 ? `${((data.subscribers.totalPaid / data.totalStudents) * 100).toFixed(1)}%` : "0%",
+            direction: "up",
+            label: "Conversion rate"
+          }}
+        />
+
+        {/* Platform Gross Revenue */}
+        <StatCard
+          title="Gross Revenue (GMV)"
+          value={`₹${(data.financials.totalGmv || 0).toLocaleString()}`}
+          subtitle={`Net: ₹${data.financials.netRevenue.toLocaleString()} | GST: ₹${data.financials.totalGst.toLocaleString()}`}
+          icon={TrendingUp}
+          iconBg="bg-violet-50 text-violet-600"
+          trend={{
+            value: `₹${data.financials.mrrEstimate}/mo`,
+            direction: "up",
+            label: "Estimated MRR"
+          }}
+        />
+
+        {/* Global Competitions & GD */}
+        <StatCard
+          title="Live Arena Operations"
+          value={`${data.operations.activeContests} Contests`}
+          subtitle={`${data.operations.activeGdRooms} Active GD Rooms (${data.operations.totalGdRooms} Total)`}
+          icon={Trophy}
+          iconBg="bg-amber-50 text-amber-600"
+          trend={{
+            value: `${data.operations.upcomingContests} Scheduled`,
+            direction: "neutral",
+            label: "Upcoming"
+          }}
+        />
       </div>
 
-      {/* Main Grid: Pending Approvals & Quick Navigation */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Pending Requests Table / Card */}
-        <div className="lg:col-span-2 space-y-4">
-          <Card padding="p-0" className="overflow-hidden">
-            <div className="p-5 flex items-center justify-between border-b border-slate-100">
-              <div>
-                <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
-                  <Clock className="w-4 h-4 text-amber-600" />
-                  College Onboarding Queue
-                </h3>
-                <p className="text-xs text-slate-500">
-                  Colleges that completed registration and require administrator verification.
-                </p>
+      {/* Quick Launchpad Strip */}
+      <Card className="p-4 sm:p-5 bg-gradient-to-r from-slate-900 to-indigo-950 text-white border-slate-800 shadow-md">
+        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+          <div>
+            <h3 className="text-sm font-bold text-white flex items-center gap-2">
+              <Sparkles className="w-4 h-4 text-amber-400" />
+              Direct Administrator Actions
+            </h3>
+            <p className="text-xs text-slate-300 mt-0.5">
+              Instantly broadcast challenges, initialize official GD arenas, or audit curriculum
+            </p>
+          </div>
+          <div className="flex flex-wrap items-center gap-2.5">
+            <Button
+              size="sm"
+              icon={Plus}
+              onClick={() => navigate("/super-admin/contests?action=new")}
+              className="bg-indigo-600 hover:bg-indigo-500 text-white text-xs"
+            >
+              Launch Global Contest
+            </Button>
+            <Button
+              size="sm"
+              icon={MessageSquare}
+              onClick={() => navigate("/super-admin/gd?action=new")}
+              className="bg-emerald-600 hover:bg-emerald-500 text-white text-xs"
+            >
+              Schedule Official GD
+            </Button>
+            <Button
+              size="sm"
+              icon={BookOpen}
+              onClick={() => navigate("/super-admin/questions?action=new")}
+              className="bg-purple-600 hover:bg-purple-500 text-white text-xs"
+            >
+              Add Question
+            </Button>
+            <Button
+              size="sm"
+              variant="outline"
+              icon={FileText}
+              onClick={() => navigate("/super-admin/reports")}
+              className="border-slate-700 bg-slate-800 text-slate-200 hover:bg-slate-700 text-xs"
+            >
+              Export Pitch Decks
+            </Button>
+          </div>
+        </div>
+      </Card>
+
+      {/* Two-Column Telemetry: Top Colleges vs Recent Financial Stream */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Pillar 3 Preview: Top College Cohorts (Strict Zero-PII) */}
+        <Card className="p-5 border-slate-200 shadow-sm flex flex-col justify-between">
+          <div>
+            <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+              <div className="flex items-center gap-2">
+                <div className="p-2 rounded-xl bg-indigo-50 text-indigo-600">
+                  <Building2 className="w-4 h-4" />
+                </div>
+                <div>
+                  <h3 className="text-sm font-bold text-slate-900">Top College Cohorts</h3>
+                  <p className="text-[11px] text-slate-500">Zero-PII aggregated readiness benchmarking</p>
+                </div>
               </div>
-              <Button
-                variant="ghost"
-                size="sm"
-                icon={ArrowRight}
-                onClick={() => navigate("/super-admin/approvals")}
-                className="text-xs"
-              >
-                View All ({stats.pendingApprovals})
-              </Button>
+              <Badge variant="indigo" size="sm">Strict Privacy</Badge>
             </div>
 
-            {loading ? (
-              <div className="p-4">
-                <TableSkeleton rows={4} cols={3} />
-              </div>
-            ) : pendingColleges.length === 0 ? (
-              <div className="p-12 text-center text-slate-500">
-                <CheckCircle2 className="w-10 h-10 text-emerald-500 mx-auto mb-2" />
-                <p className="font-semibold text-slate-800">All caught up!</p>
-                <p className="text-xs text-slate-400 mt-0.5">No pending college onboarding applications at this time.</p>
-              </div>
-            ) : (
-              <div className="divide-y divide-slate-100">
-                {pendingColleges.map((inst) => (
-                  <div key={inst.id} className="p-4 hover:bg-slate-50/70 transition-colors flex items-center justify-between gap-4">
-                    <div className="min-w-0 space-y-1">
-                      <div className="flex items-center gap-2">
-                        <span className="font-bold text-sm text-slate-900 truncate">{inst.name}</span>
-                        {inst.code && (
-                          <Badge variant="secondary" size="xs">
-                            {inst.code}
-                          </Badge>
-                        )}
-                        <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800">
-                          PENDING APPROVAL
-                        </span>
-                      </div>
-                      <div className="flex flex-wrap items-center gap-3 text-xs text-slate-500">
-                        <span>Admin: <strong className="text-slate-700">{inst.adminUsername}</strong></span>
-                        <span>•</span>
-                        <span>{inst.officialEmail}</span>
-                        {inst.website && (
-                          <>
-                            <span>•</span>
-                            <span className="text-indigo-600 truncate max-w-[150px]">{inst.website}</span>
-                          </>
-                        )}
+            <div className="mt-4 space-y-3">
+              {loading ? (
+                <TableSkeleton rows={4} columns={3} />
+              ) : data.topColleges && data.topColleges.length > 0 ? (
+                data.topColleges.map((college, idx) => (
+                  <div
+                    key={college.collegeName || idx}
+                    className="flex items-center justify-between p-3 rounded-xl bg-slate-50 hover:bg-slate-100/80 transition-colors border border-slate-100"
+                  >
+                    <div className="flex items-center gap-3 min-w-0">
+                      <span className="w-6 h-6 rounded-lg bg-indigo-100 text-indigo-700 font-bold text-xs flex items-center justify-center shrink-0">
+                        {idx + 1}
+                      </span>
+                      <div className="min-w-0">
+                        <p className="text-xs font-bold text-slate-800 truncate" title={college.collegeName}>
+                          {college.collegeName}
+                        </p>
+                        <p className="text-[11px] text-slate-500">
+                          {college.studentCount} student{college.studentCount > 1 ? "s" : ""} enrolled
+                        </p>
                       </div>
                     </div>
-
-                    <Button
-                      variant="primary"
-                      size="xs"
-                      onClick={() => navigate(`/super-admin/approvals?collegeId=${inst.id}`)}
-                      className="shrink-0 bg-indigo-600 hover:bg-indigo-700"
-                    >
-                      Review & Approve
-                    </Button>
+                    <div className="text-right shrink-0">
+                      <span className="text-xs font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
+                        {college.avgReadiness}% Readiness
+                      </span>
+                    </div>
                   </div>
-                ))}
+                ))
+              ) : (
+                <div className="text-center py-8 text-xs text-slate-400">
+                  No college cohort data aggregated yet.
+                </div>
+              )}
+            </div>
+          </div>
+
+          <div className="mt-4 pt-3 border-t border-slate-100">
+            <button
+              onClick={() => navigate("/super-admin/reports?tab=college")}
+              className="text-xs font-bold text-indigo-600 hover:text-indigo-800 flex items-center gap-1.5 transition-colors cursor-pointer"
+            >
+              Generate Full College Partnership Deck <ArrowRight className="w-3.5 h-3.5" />
+            </button>
+          </div>
+        </Card>
+
+        {/* Pillar 1 Preview: Recent Financial Stream */}
+        <Card className="p-5 border-slate-200 shadow-sm flex flex-col justify-between">
+          <div>
+            <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+              <div className="flex items-center gap-2">
+                <div className="p-2 rounded-xl bg-emerald-50 text-emerald-600">
+                  <CreditCard className="w-4 h-4" />
+                </div>
+                <div>
+                  <h3 className="text-sm font-bold text-slate-900">Recent Revenue Stream</h3>
+                  <p className="text-[11px] text-slate-500">Verified Razorpay subscription & power-up transactions</p>
+                </div>
               </div>
-            )}
-          </Card>
+              <Badge variant="emerald" size="sm">Real-Time</Badge>
+            </div>
+
+            <div className="mt-4 space-y-2.5">
+              {loading ? (
+                <TableSkeleton rows={4} columns={3} />
+              ) : data.recentTransactions && data.recentTransactions.length > 0 ? (
+                data.recentTransactions.map((tx, idx) => (
+                  <div
+                    key={tx.orderId || idx}
+                    className="flex items-center justify-between p-2.5 rounded-xl bg-slate-50 border border-slate-100 text-xs"
+                  >
+                    <div className="min-w-0">
+                      <div className="flex items-center gap-2">
+                        <span className="font-bold text-slate-800 truncate">
+                          {tx.type || tx.orderType || "PLAN_SUBSCRIPTION"}
+                        </span>
+                        <span className="text-[10px] font-mono text-slate-400">
+                          {tx.orderId?.slice(-8) || "TX"}
+                        </span>
+                      </div>
+                      <div className="text-[10px] text-slate-400">
+                        {new Date(tx.createdAt || Date.now()).toLocaleDateString("en-IN", {
+                          month: "short",
+                          day: "numeric",
+                          hour: "2-digit",
+                          minute: "2-digit"
+                        })}
+                      </div>
+                    </div>
+                    <div className="text-right shrink-0">
+                      <span className="font-black text-slate-900">
+                        ₹{(tx.totalAmount || tx.amount || 0).toLocaleString()}
+                      </span>
+                      <div className="text-[10px] font-semibold text-emerald-600">
+                        PAID / VERIFIED
+                      </div>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <div className="text-center py-8 text-xs text-slate-400">
+                  No recent transactions recorded yet.
+                </div>
+              )}
+            </div>
+          </div>
+
+          <div className="mt-4 pt-3 border-t border-slate-100">
+            <button
+              onClick={() => navigate("/super-admin/reports?tab=self")}
+              className="text-xs font-bold text-emerald-600 hover:text-emerald-800 flex items-center gap-1.5 transition-colors cursor-pointer"
+            >
+              Open Complete Financial Ledger & Tax Records <ArrowRight className="w-3.5 h-3.5" />
+            </button>
+          </div>
+        </Card>
+      </div>
+
+      {/* Operations Quick Card */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div
+          onClick={() => navigate("/super-admin/contests")}
+          className="p-5 rounded-2xl bg-gradient-to-br from-amber-500/10 via-amber-500/5 to-white border border-amber-200/80 cursor-pointer hover:shadow-md transition-all group"
+        >
+          <div className="flex items-center justify-between">
+            <div className="p-3 rounded-2xl bg-amber-500 text-white shadow-md shadow-amber-500/20">
+              <Trophy className="w-6 h-6" />
+            </div>
+            <ArrowRight className="w-4 h-4 text-amber-600 group-hover:translate-x-1 transition-transform" />
+          </div>
+          <h4 className="mt-4 text-base font-bold text-slate-900">Contests & Global Assessments</h4>
+          <p className="mt-1 text-xs text-slate-500 leading-relaxed">
+            Manage university hackathons, aptitude sprints, and competitive coding rounds broadcasted to every student.
+          </p>
+          <div className="mt-3 flex items-center gap-2 text-xs font-bold text-amber-700">
+            <span>{data.operations.activeContests} Live Now</span>
+            <span>•</span>
+            <span>{data.operations.upcomingContests} Scheduled</span>
+          </div>
         </div>
 
-        {/* Quick Action Side Panel */}
-        <div className="space-y-4">
-          <Card padding="p-5" className="bg-gradient-to-br from-purple-500/10 via-indigo-500/5 to-transparent border-purple-100">
-            <h4 className="font-bold text-slate-900 text-sm mb-2 flex items-center gap-2">
-              <BookOpen className="w-4 h-4 text-purple-600" />
-              Global Question Governance
-            </h4>
-            <p className="text-xs text-slate-600 mb-4 leading-relaxed">
-              Curate benchmark coding challenges and standardized MCQs visible to all colleges and assessments platform-wide.
-            </p>
-            <div className="space-y-2">
-              <Button
-                variant="primary"
-                size="sm"
-                className="w-full justify-between bg-purple-600 hover:bg-purple-700 text-white"
-                onClick={() => navigate("/super-admin/questions?action=new")}
-              >
-                <span>Add Global Question</span>
-                <ArrowRight className="w-4 h-4" />
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                className="w-full justify-between"
-                onClick={() => navigate("/super-admin/questions")}
-              >
-                <span>Browse Universal Question Bank</span>
-                <ArrowRight className="w-4 h-4" />
-              </Button>
+        <div
+          onClick={() => navigate("/super-admin/gd")}
+          className="p-5 rounded-2xl bg-gradient-to-br from-indigo-500/10 via-indigo-500/5 to-white border border-indigo-200/80 cursor-pointer hover:shadow-md transition-all group"
+        >
+          <div className="flex items-center justify-between">
+            <div className="p-3 rounded-2xl bg-indigo-600 text-white shadow-md shadow-indigo-600/20">
+              <MessageSquare className="w-6 h-6" />
             </div>
-          </Card>
-
-          <Card padding="p-5">
-            <h4 className="font-bold text-slate-900 text-sm mb-2 flex items-center gap-2">
-              <Building2 className="w-4 h-4 text-slate-700" />
-              Institutions Directory
-            </h4>
-            <p className="text-xs text-slate-500 mb-4">
-              Inspect all registered colleges, view academic structures, and toggle tenant statuses.
-            </p>
-            <Button
-              variant="outline"
-              size="sm"
-              className="w-full justify-between"
-              onClick={() => navigate("/super-admin/institutions")}
-            >
-              <span>View Directory</span>
-              <ArrowRight className="w-4 h-4" />
-            </Button>
-          </Card>
+            <ArrowRight className="w-4 h-4 text-indigo-600 group-hover:translate-x-1 transition-transform" />
+          </div>
+          <h4 className="mt-4 text-base font-bold text-slate-900">Group Discussion (GD Arena)</h4>
+          <p className="mt-1 text-xs text-slate-500 leading-relaxed">
+            Schedule official 15-minute group discussion sessions, manage concurrency locks, and monitor active candidate rooms.
+          </p>
+          <div className="mt-3 flex items-center gap-2 text-xs font-bold text-indigo-700">
+            <span>{data.operations.activeGdRooms} Active Rooms</span>
+            <span>•</span>
+            <span>{data.operations.totalGdRooms} Total Sessions</span>
+          </div>
         </div>
       </div>
     </div>

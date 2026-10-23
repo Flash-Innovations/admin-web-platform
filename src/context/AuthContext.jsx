@@ -80,10 +80,13 @@ export function AuthProvider({ children }) {
   const login = async (identifier, password) => {
     let data;
     try {
-      data = await authService.institutionLogin(identifier, password);
+      data = await authService.superAdminLogin(identifier, password);
     } catch (e) {
-      // Fallback to general login endpoint
-      data = await authService.login(identifier, password);
+      try {
+        data = await authService.institutionLogin(identifier, password);
+      } catch (err2) {
+        data = await authService.login(identifier, password);
+      }
     }
     return applyLoginResponse(data, identifier);
   };

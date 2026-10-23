@@ -2,9 +2,10 @@ import React from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import {
   LayoutDashboard,
-  Building2,
-  Users,
+  Trophy,
+  MessageSquare,
   BookOpen,
+  FileText,
   LogOut,
   ChevronLeft,
   ChevronRight,
@@ -20,10 +21,11 @@ export function Sidebar({ isCollapsed, setIsCollapsed, mobileOpen, setMobileOpen
   const navigate = useNavigate();
 
   const adminLinks = [
-    { to: "/super-admin/dashboard", label: "Platform Overview", icon: LayoutDashboard },
-    { to: "/super-admin/approvals", label: "College Approvals", icon: Building2, badge: "Review" },
-    { to: "/super-admin/institutions", label: "Institutions Directory", icon: Users },
-    { to: "/super-admin/questions", label: "Global Question Bank", icon: BookOpen, badge: "Global" }
+    { to: "/super-admin/dashboard", label: "Command Center", icon: LayoutDashboard },
+    { to: "/super-admin/contests", label: "Global Contests", icon: Trophy, badge: "Live" },
+    { to: "/super-admin/gd", label: "GD Arena", icon: MessageSquare },
+    { to: "/super-admin/questions", label: "Question Bank", icon: BookOpen },
+    { to: "/super-admin/reports", label: "4-Pillar Reports", icon: FileText, badge: "Deck" }
   ];
 
   const handleLogout = () => {
@@ -66,13 +68,13 @@ export function Sidebar({ isCollapsed, setIsCollapsed, mobileOpen, setMobileOpen
                 </div>
                 <div className="min-w-0">
                   <div className="text-xs font-black tracking-wider uppercase text-white truncate flex items-center gap-1.5">
-                    SIPS Admin
+                    Flash SuperAdmin
                     <span className="text-[9px] font-bold px-1.5 py-0.2 rounded bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
                       Root
                     </span>
                   </div>
                   <div className="text-[10px] text-slate-400 font-mono truncate">
-                    Platform SuperAdmin
+                    B2C Platform Governance
                   </div>
                 </div>
               </div>

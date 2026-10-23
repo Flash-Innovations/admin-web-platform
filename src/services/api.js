@@ -3,7 +3,8 @@
  * Handles JWT token injection, response parsing, and error normalization
  */
 
-const API_BASE_URL = (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.VITE_API_URL) || 'https://sips-flash-backend.onrender.com';
+const API_BASE_URL = (typeof import.meta !== 'undefined' && import.meta.env && (import.meta.env.VITE_B2C_API_URL || import.meta.env.VITE_API_URL)) ||
+  (typeof window !== 'undefined' && window.location.hostname === 'localhost' ? 'http://localhost:5001' : 'https://student-b2c-backend.onrender.com');
 
 /**
  * Resolves a backend-hosted asset path (e.g. /uploads/profile-123.jpg)

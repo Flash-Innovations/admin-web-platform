@@ -5,6 +5,17 @@ import { api } from './api';
  */
 export const authService = {
   /**
+   * Super Administrator B2C root login
+   */
+  async superAdminLogin(identifier, password) {
+    const data = await api.post('/api/b2c/admin/login', {
+      email: identifier.trim(),
+      password
+    });
+    return data;
+  },
+
+  /**
    * General login with institutional email or Roll No / USN and password
    */
   async login(identifier, password) {

@@ -19,9 +19,10 @@ const DataSecurityPage = lazyNamed(() => import("../pages/legal/DataSecurityPage
 
 // Lazy-loaded Super Admin Pages
 const SuperAdminDashboard = lazyNamed(() => import("../pages/superadmin/SuperAdminDashboard"), "SuperAdminDashboard");
-const CollegeApprovalsPage = lazyNamed(() => import("../pages/superadmin/CollegeApprovalsPage"), "CollegeApprovalsPage");
-const InstitutionsDirectoryPage = lazyNamed(() => import("../pages/superadmin/InstitutionsDirectoryPage"), "InstitutionsDirectoryPage");
+const ContestsAdminPage = lazyNamed(() => import("../pages/superadmin/ContestsAdminPage"), "ContestsAdminPage");
+const GdAdminPage = lazyNamed(() => import("../pages/superadmin/GdAdminPage"), "GdAdminPage");
 const GlobalQuestionBankPage = lazyNamed(() => import("../pages/superadmin/GlobalQuestionBankPage"), "GlobalQuestionBankPage");
+const ReportsGeneratorPage = lazyNamed(() => import("../pages/superadmin/ReportsGeneratorPage"), "ReportsGeneratorPage");
 
 import { PageSkeleton } from "../components/common/LoadingSkeleton";
 
@@ -50,23 +51,28 @@ export function AppRoutes() {
 
         {/* Direct shortcuts */}
         <Route path="/dashboard" element={<Navigate to="/super-admin/dashboard" replace />} />
-        <Route path="/approvals" element={<Navigate to="/super-admin/approvals" replace />} />
-        <Route path="/institutions" element={<Navigate to="/super-admin/institutions" replace />} />
+        <Route path="/contests" element={<Navigate to="/super-admin/contests" replace />} />
+        <Route path="/gd" element={<Navigate to="/super-admin/gd" replace />} />
         <Route path="/questions" element={<Navigate to="/super-admin/questions" replace />} />
+        <Route path="/reports" element={<Navigate to="/super-admin/reports" replace />} />
+        <Route path="/approvals" element={<Navigate to="/super-admin/dashboard" replace />} />
+        <Route path="/institutions" element={<Navigate to="/super-admin/dashboard" replace />} />
 
         {/* Super Admin Console Routes */}
         <Route element={<ProtectedRoute allowedRoles={["super_admin"]} />}>
           <Route element={<DashboardLayout />}>
             <Route path="/super-admin/dashboard" element={<SuperAdminDashboard />} />
-            <Route path="/super-admin/approvals" element={<CollegeApprovalsPage />} />
-            <Route path="/super-admin/institutions" element={<InstitutionsDirectoryPage />} />
+            <Route path="/super-admin/contests" element={<ContestsAdminPage />} />
+            <Route path="/super-admin/gd" element={<GdAdminPage />} />
             <Route path="/super-admin/questions" element={<GlobalQuestionBankPage />} />
+            <Route path="/super-admin/reports" element={<ReportsGeneratorPage />} />
 
-            {/* Legacy route compatibility aliases */}
+            {/* Route aliases */}
             <Route path="/super_admin/dashboard" element={<SuperAdminDashboard />} />
-            <Route path="/super_admin/approvals" element={<CollegeApprovalsPage />} />
-            <Route path="/super_admin/institutions" element={<InstitutionsDirectoryPage />} />
+            <Route path="/super_admin/contests" element={<ContestsAdminPage />} />
+            <Route path="/super_admin/gd" element={<GdAdminPage />} />
             <Route path="/super_admin/questions" element={<GlobalQuestionBankPage />} />
+            <Route path="/super_admin/reports" element={<ReportsGeneratorPage />} />
             <Route path="/superadmin/*" element={<Navigate to="/super-admin/dashboard" replace />} />
             <Route path="/super_admin/*" element={<Navigate to="/super-admin/dashboard" replace />} />
           </Route>
