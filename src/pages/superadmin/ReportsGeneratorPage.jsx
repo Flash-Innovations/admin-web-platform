@@ -382,12 +382,12 @@ export function ReportsGeneratorPage() {
           {/* Unit Economics Grid */}
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
             {[
-              { label: "Blended ARPU", val: investorData?.headlineMetrics?.blendedArpu || "₹85" },
-              { label: "Est. CAC", val: investorData?.headlineMetrics?.estimatedCac || "₹120" },
-              { label: "Customer LTV", val: investorData?.headlineMetrics?.customerLifetimeValue || "₹1,450" },
-              { label: "LTV / CAC Ratio", val: investorData?.headlineMetrics?.ltvToCac || "12.1x" },
-              { label: "Gross Margin", val: investorData?.headlineMetrics?.grossMargin || "84%" },
-              { label: "DAU / MAU Ratio", val: investorData?.headlineMetrics?.dauMauRatio || "42.8%" }
+              { label: "Blended ARPU", val: investorData?.headlineMetrics?.blendedArpu || "—" },
+              { label: "Est. CAC", val: investorData?.headlineMetrics?.estimatedCac || "—" },
+              { label: "Customer LTV", val: investorData?.headlineMetrics?.customerLifetimeValue || "—" },
+              { label: "LTV / CAC Ratio", val: investorData?.headlineMetrics?.ltvToCac || "—" },
+              { label: "Gross Margin", val: investorData?.headlineMetrics?.grossMargin || "—" },
+              { label: "DAU / MAU Ratio", val: investorData?.headlineMetrics?.dauMauRatio || "—" }
             ].map((item, idx) => (
               <Card key={idx} className="p-4 border-slate-200">
                 <p className="text-[10px] font-bold uppercase text-slate-500">{item.label}</p>
@@ -407,19 +407,19 @@ export function ReportsGeneratorPage() {
                 <div className="flex items-center justify-between p-3 rounded-xl bg-slate-50">
                   <span className="text-slate-600">Weekly Organic Growth Rate:</span>
                   <span className="font-black text-emerald-600">
-                    {investorData?.traction?.weeklyGrowthRate || "+18.4% WoW"}
+                    {investorData?.traction?.weeklyGrowthRate || "—"}
                   </span>
                 </div>
                 <div className="flex items-center justify-between p-3 rounded-xl bg-slate-50">
                   <span className="text-slate-600">Batch of 2028 Concentration:</span>
                   <span className="font-black text-indigo-600">
-                    {investorData?.traction?.targetBatch2028Concentration || "74%"}
+                    {investorData?.traction?.targetBatch2028Concentration || "—"}
                   </span>
                 </div>
                 <div className="flex items-center justify-between p-3 rounded-xl bg-slate-50">
                   <span className="text-slate-600">Paid Conversion Rate:</span>
                   <span className="font-black text-slate-900">
-                    {investorData?.headlineMetrics?.payingConversionRate || "12.5%"}
+                    {investorData?.headlineMetrics?.payingConversionRate || "0%"}
                   </span>
                 </div>
               </div>
@@ -440,13 +440,13 @@ export function ReportsGeneratorPage() {
                 <div className="flex items-center justify-between p-3 rounded-xl bg-slate-50">
                   <span className="text-slate-600">Average Session Length:</span>
                   <span className="font-black text-violet-600">
-                    {investorData?.engagementDepth?.averageSessionLengthMins || "34.2 mins"}
+                    {investorData?.engagementDepth?.averageSessionLengthMins || "—"}
                   </span>
                 </div>
                 <div className="flex items-center justify-between p-3 rounded-xl bg-slate-50">
                   <span className="text-slate-600">Avg Problems Per Active Student:</span>
                   <span className="font-black text-slate-900">
-                    {investorData?.engagementDepth?.avgQuestionsPerActiveUser || 14}
+                    {investorData?.engagementDepth?.avgQuestionsPerActiveUser || 0}
                   </span>
                 </div>
               </div>
@@ -477,25 +477,25 @@ export function ReportsGeneratorPage() {
             <Card className="p-4 border-slate-200">
               <p className="text-[11px] font-bold uppercase text-slate-500">DSA Pass Rate</p>
               <p className="mt-1 text-2xl font-black text-emerald-600">
-                {collegeData?.ecosystemBenchmark?.benchmarkSkills?.dsaExecutionPassRate || "68.4%"}
+                {collegeData?.ecosystemBenchmark?.benchmarkSkills?.dsaExecutionPassRate || "—"}
               </p>
             </Card>
             <Card className="p-4 border-slate-200">
               <p className="text-[11px] font-bold uppercase text-slate-500">Aptitude Accuracy</p>
               <p className="mt-1 text-2xl font-black text-indigo-600">
-                {collegeData?.ecosystemBenchmark?.benchmarkSkills?.aptitudeAccuracy || "72.1%"}
+                {collegeData?.ecosystemBenchmark?.benchmarkSkills?.aptitudeAccuracy || "—"}
               </p>
             </Card>
             <Card className="p-4 border-slate-200">
               <p className="text-[11px] font-bold uppercase text-slate-500">Mock Interview Score</p>
               <p className="mt-1 text-2xl font-black text-amber-600">
-                {collegeData?.ecosystemBenchmark?.benchmarkSkills?.mockInterviewStarRating || "7.8 / 10"}
+                {collegeData?.ecosystemBenchmark?.benchmarkSkills?.mockInterviewStarRating || "—"}
               </p>
             </Card>
             <Card className="p-4 border-slate-200">
               <p className="text-[11px] font-bold uppercase text-slate-500">ATS Resume Match</p>
               <p className="mt-1 text-2xl font-black text-violet-600">
-                {collegeData?.ecosystemBenchmark?.benchmarkSkills?.atsResumeMatchAverage || "76%"}
+                {collegeData?.ecosystemBenchmark?.benchmarkSkills?.atsResumeMatchAverage || "—"}
               </p>
             </Card>
           </div>
