@@ -12,6 +12,20 @@ const API_BASE_URL = (!rawApiUrl || isLegacyHost)
       : 'https://student-b2c-backend.onrender.com')
   : rawApiUrl;
 
+const rawAdminApiUrl = (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.VITE_ADMIN_API_URL) || '';
+const ADMIN_API_BASE_URL = rawAdminApiUrl || API_BASE_URL;
+
+/**
+ * Resolves the appropriate base service URL for the given endpoint.
+ * Question Bank requests route to the Unified Flash Backend (port 5001).
+ */
+export function getEndpointBaseUrl(endpoint) {
+  if (endpoint && (endpoint.startsWith('/api/super-admin/questions') || endpoint.startsWith('/api/admin/questions'))) {
+    return ADMIN_API_BASE_URL;
+  }
+  return API_BASE_URL;
+}
+
 /**
  * Resolves a backend-hosted asset path (e.g. /uploads/profile-123.jpg)
  * against the backend API base URL (VITE_API_URL).
@@ -114,7 +128,8 @@ export const isAuthEndpoint = (endpoint, options = {}) => {
 };
 
 async function request(endpoint, options = {}) {
-  const url = `${API_BASE_URL}${endpoint}`;
+  const baseUrl = getEndpointBaseUrl(endpoint);
+  const url = `${baseUrl}${endpoint}`;
   const token = getAuthToken();
   const isAuth = isAuthEndpoint(endpoint, options);
 

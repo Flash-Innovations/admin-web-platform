@@ -82,13 +82,27 @@ export const superAdminService = {
     if (filters.page) params.append('page', filters.page);
     if (filters.limit) params.append('limit', filters.limit);
     if (filters.search) params.append('search', filters.search);
+    if (filters.topic && filters.topic !== 'ALL') params.append('topic', filters.topic);
     if (filters.type && filters.type !== 'ALL') params.append('type', filters.type);
     if (filters.difficulty && filters.difficulty !== 'ALL') params.append('difficulty', filters.difficulty);
     if (filters.status && filters.status !== 'ALL') params.append('status', filters.status);
     
-    // Check if practice platform API is reachable or proxy through super admin
     const qs = params.toString() ? `?${params.toString()}` : '';
     return api.get(`/api/super-admin/questions${qs}`);
+  },
+
+  /**
+   * Distinct Dynamic Topics / Categories backed by PostgreSQL
+   */
+  async getTopics() {
+    return api.get('/api/super-admin/questions/topics');
+  },
+
+  /**
+   * Retrieve full details of a question by ID
+   */
+  async getQuestionById(questionId) {
+    return api.get(`/api/super-admin/questions/${questionId}`);
   },
 
   /**

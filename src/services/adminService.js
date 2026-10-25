@@ -70,6 +70,13 @@ export const adminService = {
   },
 
   /**
+   * Contests: Get questions associated with a specific contest
+   */
+  async getContestQuestions(id) {
+    return api.get(`/api/b2c/admin/contests/${id}/questions`);
+  },
+
+  /**
    * Contests: Update an existing contest (status, schedule, syllabus, etc.)
    */
   async updateContest(id, updates) {
