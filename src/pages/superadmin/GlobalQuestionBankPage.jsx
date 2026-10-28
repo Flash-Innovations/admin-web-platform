@@ -4,7 +4,6 @@ import {
   BookOpen,
   Plus,
   Search,
-  Filter,
   Code2,
   HelpCircle,
   Sparkles,
@@ -17,23 +16,22 @@ import {
   ChevronLeft,
   Eye,
   Globe,
-  Tag,
   AlertCircle,
-  AlertTriangle,
   CheckSquare,
   Square,
   MinusSquare,
   X,
-  PlayCircle,
   Check,
   ShieldAlert,
-  Database
+  Database,
+  UploadCloud,
+  FileSpreadsheet,
+  FileJson
 } from "lucide-react";
 import { superAdminService } from "../../services/superAdminService";
 import { useNotifications } from "../../context/NotificationContext";
 import { Card } from "../../components/common/Card";
 import { Button } from "../../components/common/Button";
-import { Badge } from "../../components/common/Badge";
 import { Skeleton } from "../../components/common/LoadingSkeleton";
 import { ProblemStatement } from "../../components/common/ProblemStatement";
 
@@ -68,6 +66,13 @@ export function GlobalQuestionBankPage() {
   const [selectedQuestion, setSelectedQuestion] = useState(null);
   const [deleteModalState, setDeleteModalState] = useState({ isOpen: false, isBulk: false, question: null });
 
+  // Bulk Ingestion State
+  const [isBulkModalOpen, setIsBulkModalOpen] = useState(false);
+  const [bulkFile, setBulkFile] = useState(null);
+  const [bulkImporting, setBulkImporting] = useState(false);
+  const [parsedBulkItems, setParsedBulkItems] = useState([]);
+  const [bulkParseError, setBulkParseError] = useState("");
+
   // Form State for New Question
   const [formType, setFormType] = useState("CODING");
   const [formTitle, setFormTitle] = useState("");
@@ -75,8 +80,16 @@ export function GlobalQuestionBankPage() {
   const [formCategory, setFormCategory] = useState("Algorithms");
   const [formDifficulty, setFormDifficulty] = useState("MEDIUM");
   const [formTags, setFormTags] = useState("arrays, dynamic-programming");
-  const [formTestCases, setFormTestCases] = useState('[{"input": "2 3\\n", "output": "5\\n", "isSample": true, "explanation": "Sample test case"}]');
-  const [formOptions, setFormOptions] = useState("Option A\nOption B\nOption C\nOption D");
+  
+  // Interactive Test Cases Builder State
+  const [testCaseMode, setTestCaseMode] = useState("VISUAL"); // VISUAL | RAW
+  const [visualTestCases, setVisualTestCases] = useState([
+    { input: "2 3\n", output: "5\n", isSample: true, explanation: "Sample sum of 2 and 3" }
+  ]);
+  const [formTestCases, setFormTestCases] = useState('[{"input": "2 3\\n", "output": "5\\n", "isSample": true, "explanation": "Sample sum of 2 and 3"}]');
+
+  // Interactive MCQ Options Builder State
+  const [mcqOptions, setMcqOptions] = useState(["Option A", "Option B", "Option C", "Option D"]);
   const [formCorrectAnswer, setFormCorrectAnswer] = useState("0");
   const [formCreating, setFormCreating] = useState(false);
 
@@ -274,6 +287,227 @@ export function GlobalQuestionBankPage() {
     }
   };
 
+  // Visual Test Case Helpers
+  const handleAddTestCase = () => {
+    const updated = [
+      ...visualTestCases,
+      { input: "", output: "", isSample: false, explanation: "" }
+    ];
+    setVisualTestCases(updated);
+    setFormTestCases(JSON.stringify(updated, null, 2));
+  };
+
+  const handleRemoveTestCase = (index) => {
+    const updated = visualTestCases.filter((_, idx) => idx !== index);
+    setVisualTestCases(updated);
+    setFormTestCases(JSON.stringify(updated, null, 2));
+  };
+
+  const handleUpdateTestCase = (index, field, value) => {
+    const updated = visualTestCases.map((tc, idx) =>
+      idx === index ? { ...tc, [field]: value } : tc
+    );
+    setVisualTestCases(updated);
+    setFormTestCases(JSON.stringify(updated, null, 2));
+  };
+
+  const handleRawJsonChange = (rawText) => {
+    setFormTestCases(rawText);
+    try {
+      const parsed = JSON.parse(rawText);
+      if (Array.isArray(parsed)) {
+        setVisualTestCases(parsed);
+      }
+    } catch (e) {
+      // Allow in-progress typing in raw mode without erroring
+    }
+  };
+
+  // MCQ Option Helpers
+  const handleAddOption = () => {
+    setMcqOptions((prev) => [...prev, `Option ${String.fromCharCode(65 + prev.length)}`]);
+  };
+
+  const handleRemoveOption = (index) => {
+    if (mcqOptions.length <= 2) {
+      showError("Multiple choice questions require at least 2 options.");
+      return;
+    }
+    const updated = mcqOptions.filter((_, idx) => idx !== index);
+    setMcqOptions(updated);
+    if (parseInt(formCorrectAnswer, 10) >= updated.length) {
+      setFormCorrectAnswer(String(updated.length - 1));
+    }
+  };
+
+  const handleUpdateOption = (index, value) => {
+    const updated = mcqOptions.map((opt, idx) => (idx === index ? value : opt));
+    setMcqOptions(updated);
+  };
+
+  // Bulk File Ingestion Helpers
+  const downloadSampleJson = () => {
+    const sample = [
+      {
+        title: "Two Sum",
+        statement: "Given an array of integers nums and an integer target, return indices of the two numbers such that they add up to target.",
+        type: "CODING",
+        category: "Algorithms",
+        difficulty: "EASY",
+        tags: ["arrays", "hash-table"],
+        testCases: [
+          { input: "4\n2 7 11 15\n9\n", output: "0 1\n", isSample: true, explanation: "nums[0] + nums[1] == 9" },
+          { input: "3\n3 2 4\n6\n", output: "1 2\n", isSample: false }
+        ]
+      },
+      {
+        title: "ACID Properties in Relational Databases",
+        statement: "Which property in ACID ensures that database transactions are executed in a isolated and concurrent-safe manner?",
+        type: "MCQ",
+        category: "DBMS",
+        difficulty: "MEDIUM",
+        tags: ["dbms", "sql", "acid"],
+        options: ["Atomicity", "Consistency", "Isolation", "Durability"],
+        correctAnswer: 2
+      }
+    ];
+
+    const blob = new Blob([JSON.stringify(sample, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "flash_question_bank_template.json";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  };
+
+  const downloadSampleCsv = () => {
+    const headers = "title,type,category,difficulty,tags,statement,options,correctAnswer,testCases\n";
+    const row1 = `"Binary Search","CODING","Algorithms","EASY","arrays;binary-search","Given a sorted array of distinct integers and a target value, return the index if the target is found.","","","[{""input"":""5\\n1 3 5 7 9\\n5\\n"",""output"":""2\\n"",""isSample"":true}]"\n`;
+    const row2 = `"TCP vs UDP","MCQ","Networking","EASY","networking;protocols","Which protocol is connection-oriented and guarantees ordered delivery?","TCP;UDP;ICMP;IGMP","0",""\n`;
+    const csv = headers + row1 + row2;
+
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "flash_question_bank_template.csv";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  };
+
+  const handleBulkFileChange = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setBulkFile(file);
+    setBulkParseError("");
+    setParsedBulkItems([]);
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      try {
+        const text = event.target?.result;
+        if (file.name.endsWith(".json")) {
+          let parsed = JSON.parse(text);
+          if (!Array.isArray(parsed) && parsed.items) {
+            parsed = parsed.items;
+          }
+          if (!Array.isArray(parsed)) {
+            throw new Error("JSON file must contain an array of question objects or { items: [...] }.");
+          }
+          setParsedBulkItems(parsed);
+        } else if (file.name.endsWith(".csv")) {
+          // Simple CSV parser for questions
+          const lines = text.split(/\r?\n/).filter(Boolean);
+          if (lines.length < 2) {
+            throw new Error("CSV file is empty or missing data rows.");
+          }
+          const headers = lines[0].split(",").map((h) => h.trim().replace(/^"|"$/g, ""));
+          const items = [];
+
+          for (let i = 1; i < lines.length; i++) {
+            const rawLine = lines[i];
+            if (!rawLine.trim()) continue;
+
+            // Handle quoted CSV fields
+            const regex = /(?:,|\n|^)("(?:(?:"")*[^"]*)*"|[^",\n]*|(?:\n|$))/g;
+            const matches = [];
+            let match;
+            while ((match = regex.exec(rawLine)) !== null) {
+              let val = match[1] || "";
+              if (val.startsWith('"') && val.endsWith('"')) {
+                val = val.slice(1, -1).replace(/""/g, '"');
+              }
+              matches.push(val);
+              if (regex.lastIndex >= rawLine.length) break;
+            }
+
+            const row = {};
+            headers.forEach((h, idx) => {
+              row[h] = matches[idx] || "";
+            });
+
+            if (row.title && row.statement) {
+              const isMcq = (row.type || "").toUpperCase() === "MCQ";
+              let parsedTestCases = [];
+              if (row.testCases) {
+                try {
+                  parsedTestCases = JSON.parse(row.testCases);
+                } catch (err) {}
+              }
+
+              items.push({
+                title: row.title,
+                statement: row.statement,
+                type: isMcq ? "MCQ" : "CODING",
+                category: row.category || "General",
+                difficulty: (row.difficulty || "MEDIUM").toUpperCase(),
+                tags: row.tags ? row.tags.split(";").map((t) => t.trim()) : [],
+                options: isMcq && row.options ? row.options.split(";").map((o) => o.trim()) : null,
+                correctAnswer: isMcq && row.correctAnswer !== "" ? parseInt(row.correctAnswer, 10) : null,
+                testCases: parsedTestCases,
+                isGlobal: true
+              });
+            }
+          }
+          setParsedBulkItems(items);
+        } else {
+          throw new Error("Unsupported file format. Please upload a .json or .csv file.");
+        }
+      } catch (err) {
+        console.error("Parse bulk questions error:", err);
+        setBulkParseError(err.message || "Failed to parse file format.");
+      }
+    };
+    reader.readAsText(file);
+  };
+
+  const handleExecuteBulkImport = async () => {
+    if (parsedBulkItems.length === 0) {
+      showError("No valid questions found to import.");
+      return;
+    }
+
+    try {
+      setBulkImporting(true);
+      const res = await superAdminService.bulkImportQuestions(parsedBulkItems);
+      showSuccess(res.message || `Successfully imported ${parsedBulkItems.length} questions into PostgreSQL universal bank!`);
+      setIsBulkModalOpen(false);
+      setBulkFile(null);
+      setParsedBulkItems([]);
+      loadQuestions(1);
+      loadTopics();
+    } catch (err) {
+      console.error("Bulk import execution error:", err);
+      showError(err.message || "Bulk question ingestion failed.");
+    } finally {
+      setBulkImporting(false);
+    }
+  };
+
   const handleCreateQuestion = async (e) => {
     e.preventDefault();
     if (!formTitle.trim() || !formStatement.trim()) {
@@ -284,13 +518,34 @@ export function GlobalQuestionBankPage() {
     try {
       setFormCreating(true);
       let parsedTestCases = [];
-      if (formType === "CODING" && formTestCases.trim()) {
-        try {
-          parsedTestCases = JSON.parse(formTestCases);
-        } catch (e) {
-          showError("Invalid JSON in Test Cases. Please provide a valid JSON array.");
+      if (formType === "CODING") {
+        if (testCaseMode === "RAW") {
+          if (formTestCases.trim()) {
+            try {
+              parsedTestCases = JSON.parse(formTestCases);
+            } catch (e) {
+              showError("Invalid JSON in Test Cases. Please provide a valid JSON array.");
+              setFormCreating(false);
+              return;
+            }
+          }
+        } else {
+          parsedTestCases = visualTestCases.filter((tc) => tc.input || tc.output);
+        }
+      }
+
+      let optionsPayload = null;
+      let correctAnswerPayload = null;
+      if (formType === "MCQ") {
+        optionsPayload = mcqOptions.map((o) => o.trim()).filter(Boolean);
+        if (optionsPayload.length < 2) {
+          showError("Please provide at least 2 options for multiple-choice questions.");
           setFormCreating(false);
           return;
+        }
+        correctAnswerPayload = parseInt(formCorrectAnswer, 10);
+        if (isNaN(correctAnswerPayload) || correctAnswerPayload < 0 || correctAnswerPayload >= optionsPayload.length) {
+          correctAnswerPayload = 0;
         }
       }
 
@@ -308,8 +563,8 @@ export function GlobalQuestionBankPage() {
         tags: tagsArray,
         isGlobal: true,
         testCases: parsedTestCases,
-        options: formType === "MCQ" ? formOptions.split("\n").filter(Boolean) : null,
-        correctAnswer: formType === "MCQ" ? parseInt(formCorrectAnswer, 10) : null
+        options: optionsPayload,
+        correctAnswer: correctAnswerPayload
       };
 
       const res = await superAdminService.createGlobalQuestion(payload);
@@ -352,6 +607,15 @@ export function GlobalQuestionBankPage() {
             loading={loading}
           >
             Refresh
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            icon={UploadCloud}
+            onClick={() => setIsBulkModalOpen(true)}
+            className="border-purple-200 text-purple-700 hover:bg-purple-50"
+          >
+            Bulk Ingestion
           </Button>
           <Button
             variant="primary"
@@ -1029,45 +1293,229 @@ export function GlobalQuestionBankPage() {
 
               {/* Type specific fields */}
               {formType === "CODING" ? (
-                <div>
-                  <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">
-                    Test Cases (JSON Array)
-                  </label>
-                  <textarea
-                    rows={3}
-                    value={formTestCases}
-                    onChange={(e) => setFormTestCases(e.target.value)}
-                    className="w-full px-3.5 py-2 text-xs rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-600 font-mono"
-                  />
-                  <p className="text-[11px] text-slate-400 mt-0.5">
-                    Array of objects with input, output, isSample, explanation.
-                  </p>
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider">
+                        Test Cases ({visualTestCases.length})
+                      </label>
+                      <p className="text-[11px] text-slate-400">
+                        Define benchmark input/output test cases for candidate evaluations.
+                      </p>
+                    </div>
+
+                    <div className="flex items-center gap-1 bg-slate-100 p-0.5 rounded-lg border border-slate-200">
+                      <button
+                        type="button"
+                        onClick={() => setTestCaseMode("VISUAL")}
+                        className={`px-2 py-1 text-[10px] font-bold rounded-md transition-all cursor-pointer ${
+                          testCaseMode === "VISUAL"
+                            ? "bg-white text-purple-700 shadow-2xs"
+                            : "text-slate-500 hover:text-slate-700"
+                        }`}
+                      >
+                        Visual Builder
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setTestCaseMode("RAW")}
+                        className={`px-2 py-1 text-[10px] font-bold rounded-md transition-all cursor-pointer ${
+                          testCaseMode === "RAW"
+                            ? "bg-white text-purple-700 shadow-2xs"
+                            : "text-slate-500 hover:text-slate-700"
+                        }`}
+                      >
+                        Raw JSON
+                      </button>
+                    </div>
+                  </div>
+
+                  {testCaseMode === "VISUAL" ? (
+                    <div className="space-y-3 max-h-72 overflow-y-auto pr-1">
+                      {visualTestCases.map((tc, idx) => (
+                        <div
+                          key={idx}
+                          className="p-3 rounded-xl bg-slate-50 border border-slate-200 space-y-2 text-xs"
+                        >
+                          <div className="flex items-center justify-between">
+                            <span className="font-bold text-slate-700 flex items-center gap-1.5">
+                              <span className="w-4 h-4 rounded-full bg-purple-100 text-purple-700 text-[10px] flex items-center justify-center font-bold">
+                                {idx + 1}
+                              </span>
+                              Test Case #{idx + 1}
+                            </span>
+
+                            <div className="flex items-center gap-3">
+                              <label className="inline-flex items-center gap-1 text-[11px] text-slate-600 font-medium cursor-pointer">
+                                <input
+                                  type="checkbox"
+                                  checked={tc.isSample}
+                                  onChange={(e) =>
+                                    handleUpdateTestCase(idx, "isSample", e.target.checked)
+                                  }
+                                  className="w-3.5 h-3.5 rounded text-purple-600 focus:ring-purple-500 cursor-pointer"
+                                />
+                                Sample Test Case
+                              </label>
+
+                              {visualTestCases.length > 1 && (
+                                <button
+                                  type="button"
+                                  onClick={() => handleRemoveTestCase(idx)}
+                                  className="text-slate-400 hover:text-rose-600 p-1 rounded cursor-pointer"
+                                  title="Delete test case"
+                                >
+                                  <Trash2 className="w-3.5 h-3.5" />
+                                </button>
+                              )}
+                            </div>
+                          </div>
+
+                          <div className="grid grid-cols-2 gap-2 font-mono">
+                            <div>
+                              <span className="text-[10px] uppercase font-bold text-slate-400 block mb-0.5">
+                                Input (stdin)
+                              </span>
+                              <textarea
+                                rows={2}
+                                value={tc.input}
+                                onChange={(e) =>
+                                  handleUpdateTestCase(idx, "input", e.target.value)
+                                }
+                                placeholder="e.g., 2 3\n"
+                                className="w-full px-2.5 py-1.5 text-xs rounded-lg border border-slate-200 bg-white focus:outline-none focus:ring-1 focus:ring-purple-500"
+                              />
+                            </div>
+                            <div>
+                              <span className="text-[10px] uppercase font-bold text-slate-400 block mb-0.5">
+                                Output (stdout)
+                              </span>
+                              <textarea
+                                rows={2}
+                                value={tc.output}
+                                onChange={(e) =>
+                                  handleUpdateTestCase(idx, "output", e.target.value)
+                                }
+                                placeholder="e.g., 5\n"
+                                className="w-full px-2.5 py-1.5 text-xs rounded-lg border border-slate-200 bg-white focus:outline-none focus:ring-1 focus:ring-purple-500"
+                              />
+                            </div>
+                          </div>
+
+                          <div>
+                            <input
+                              type="text"
+                              value={tc.explanation || ""}
+                              onChange={(e) =>
+                                handleUpdateTestCase(idx, "explanation", e.target.value)
+                              }
+                              placeholder="Explanation (shown to candidates on sample failure)..."
+                              className="w-full px-2.5 py-1 text-[11px] rounded-lg border border-slate-200 bg-white focus:outline-none focus:ring-1 focus:ring-purple-500"
+                            />
+                          </div>
+                        </div>
+                      ))}
+
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        icon={Plus}
+                        onClick={handleAddTestCase}
+                        className="w-full border-dashed border-slate-300 text-purple-700 hover:bg-purple-50/50"
+                      >
+                        Add Another Test Case
+                      </Button>
+                    </div>
+                  ) : (
+                    <div>
+                      <textarea
+                        rows={5}
+                        value={formTestCases}
+                        onChange={(e) => handleRawJsonChange(e.target.value)}
+                        className="w-full px-3.5 py-2 text-xs rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-600 font-mono"
+                      />
+                      <p className="text-[11px] text-slate-400 mt-0.5">
+                        Array of objects with <code>input</code>, <code>output</code>, <code>isSample</code>, and <code>explanation</code>.
+                      </p>
+                    </div>
+                  )}
                 </div>
               ) : (
                 <div className="space-y-3">
-                  <div>
-                    <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">
-                      Options (One per line)
-                    </label>
-                    <textarea
-                      rows={4}
-                      value={formOptions}
-                      onChange={(e) => setFormOptions(e.target.value)}
-                      className="w-full px-3.5 py-2 text-xs rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-600"
-                    />
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider">
+                        Multiple Choice Options ({mcqOptions.length})
+                      </label>
+                      <p className="text-[11px] text-slate-400">
+                        Provide choices and select the radio button corresponding to the correct answer.
+                      </p>
+                    </div>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      icon={Plus}
+                      onClick={handleAddOption}
+                      className="text-xs h-7 px-2"
+                    >
+                      Add Option
+                    </Button>
                   </div>
-                  <div>
-                    <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">
-                      Correct Answer (0-indexed option index)
-                    </label>
-                    <input
-                      type="number"
-                      min={0}
-                      max={5}
-                      value={formCorrectAnswer}
-                      onChange={(e) => setFormCorrectAnswer(e.target.value)}
-                      className="w-32 px-3.5 py-2 text-xs rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-600"
-                    />
+
+                  <div className="space-y-2 max-h-60 overflow-y-auto pr-1">
+                    {mcqOptions.map((opt, idx) => {
+                      const isCorrect = parseInt(formCorrectAnswer, 10) === idx;
+                      return (
+                        <div
+                          key={idx}
+                          className={`p-2.5 rounded-xl border flex items-center gap-2.5 transition-colors ${
+                            isCorrect
+                              ? "bg-purple-50/60 border-purple-300"
+                              : "bg-slate-50 border-slate-200"
+                          }`}
+                        >
+                          <label className="flex items-center gap-2 cursor-pointer shrink-0">
+                            <input
+                              type="radio"
+                              name="correctAnswerGroup"
+                              checked={isCorrect}
+                              onChange={() => setFormCorrectAnswer(String(idx))}
+                              className="w-4 h-4 text-purple-600 focus:ring-purple-500 cursor-pointer"
+                            />
+                            <span className="font-bold text-xs text-slate-700">
+                              Option {String.fromCharCode(65 + idx)}:
+                            </span>
+                          </label>
+
+                          <input
+                            type="text"
+                            required
+                            value={opt}
+                            onChange={(e) => handleUpdateOption(idx, e.target.value)}
+                            placeholder={`Enter choice ${String.fromCharCode(65 + idx)}...`}
+                            className="flex-1 px-2.5 py-1 text-xs rounded-lg border border-slate-200 bg-white focus:outline-none focus:ring-1 focus:ring-purple-500"
+                          />
+
+                          {isCorrect && (
+                            <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-purple-100 text-purple-700 border border-purple-200 shrink-0">
+                              Correct Answer
+                            </span>
+                          )}
+
+                          {mcqOptions.length > 2 && (
+                            <button
+                              type="button"
+                              onClick={() => handleRemoveOption(idx)}
+                              className="text-slate-400 hover:text-rose-600 p-1 rounded cursor-pointer shrink-0"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </button>
+                          )}
+                        </div>
+                      );
+                    })}
                   </div>
                 </div>
               )}
@@ -1106,7 +1554,193 @@ export function GlobalQuestionBankPage() {
         </div>
       )}
 
-      {/* Question Details View Modal */}
+      {/* Bulk Question Ingestion Modal */}
+      {isBulkModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/70 backdrop-blur-sm animate-fadeIn">
+          <div className="relative w-full max-w-3xl bg-white rounded-2xl shadow-2xl border border-slate-100 overflow-hidden max-h-[90vh] flex flex-col">
+            <div className="p-6 bg-slate-900 text-white flex items-center justify-between shrink-0">
+              <div>
+                <div className="flex items-center gap-2 text-xs font-bold text-purple-400 uppercase tracking-wider mb-1">
+                  <UploadCloud className="w-4 h-4" />
+                  PostgreSQL Batch Ingestion
+                </div>
+                <h3 className="text-xl font-bold">Bulk Ingest Questions</h3>
+                <p className="text-xs text-slate-400 mt-0.5">
+                  Import tens or hundreds of questions into PostgreSQL universal bank with automated schema validation.
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  setIsBulkModalOpen(false);
+                  setParsedBulkItems([]);
+                  setBulkFile(null);
+                  setBulkParseError("");
+                }}
+                className="text-slate-400 hover:text-white p-2 rounded-lg hover:bg-slate-800 transition-colors cursor-pointer"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="p-6 space-y-5 overflow-y-auto flex-1 text-xs">
+              {/* Template download strip */}
+              <div className="p-4 rounded-xl bg-purple-50/60 border border-purple-200/80 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div>
+                  <h4 className="font-bold text-purple-900 flex items-center gap-1.5">
+                    <Sparkles className="w-4 h-4 text-purple-600" />
+                    Download Canonical Format Templates
+                  </h4>
+                  <p className="text-[11px] text-purple-700/80 mt-0.5">
+                    Use our pre-configured formats with example coding challenges and MCQs.
+                  </p>
+                </div>
+                <div className="flex items-center gap-2 shrink-0">
+                  <button
+                    type="button"
+                    onClick={downloadSampleJson}
+                    className="px-3 py-1.5 rounded-lg bg-white border border-purple-200 text-purple-700 hover:bg-purple-100/60 font-semibold flex items-center gap-1.5 transition-colors cursor-pointer shadow-2xs"
+                  >
+                    <FileJson className="w-3.5 h-3.5 text-purple-600" />
+                    Sample JSON
+                  </button>
+                  <button
+                    type="button"
+                    onClick={downloadSampleCsv}
+                    className="px-3 py-1.5 rounded-lg bg-white border border-purple-200 text-purple-700 hover:bg-purple-100/60 font-semibold flex items-center gap-1.5 transition-colors cursor-pointer shadow-2xs"
+                  >
+                    <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-600" />
+                    Sample CSV
+                  </button>
+                </div>
+              </div>
+
+              {/* File Upload Dropzone */}
+              <div>
+                <label className="block text-xs font-bold uppercase text-slate-700 tracking-wider mb-2">
+                  Select Question Batch File (.json or .csv)
+                </label>
+                <div className="relative border-2 border-dashed border-slate-300 hover:border-purple-500 rounded-2xl p-6 text-center transition-colors bg-slate-50/50">
+                  <input
+                    type="file"
+                    accept=".json,.csv"
+                    onChange={handleBulkFileChange}
+                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                  />
+                  <UploadCloud className="w-10 h-10 text-purple-500 mx-auto mb-2" />
+                  <p className="font-bold text-slate-800 text-sm">
+                    {bulkFile ? bulkFile.name : "Click to select or drag and drop batch file here"}
+                  </p>
+                  <p className="text-slate-400 text-xs mt-1">
+                    Supports JSON array or standard comma-separated CSV with problem metadata.
+                  </p>
+                </div>
+              </div>
+
+              {/* Error Alert */}
+              {bulkParseError && (
+                <div className="p-3 bg-rose-50 border border-rose-200 rounded-xl flex items-start gap-2.5 text-rose-700 text-xs">
+                  <AlertCircle className="w-4 h-4 text-rose-600 shrink-0 mt-0.5" />
+                  <div>
+                    <span className="font-bold">File Parsing Error: </span>
+                    {bulkParseError}
+                  </div>
+                </div>
+              )}
+
+              {/* Dry Run Preview Table */}
+              {parsedBulkItems.length > 0 && (
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <h4 className="font-bold text-slate-800 uppercase tracking-wider text-xs flex items-center gap-2">
+                      <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                      Parsed Dry-Run Preview ({parsedBulkItems.length} Questions Ready)
+                    </h4>
+                    <span className="text-[11px] text-slate-400">
+                      Verify contents before writing to PostgreSQL
+                    </span>
+                  </div>
+
+                  <div className="border border-slate-200 rounded-xl overflow-hidden max-h-56 overflow-y-auto">
+                    <table className="w-full text-left border-collapse">
+                      <thead className="bg-slate-100 text-[10px] uppercase font-bold text-slate-500 sticky top-0">
+                        <tr>
+                          <th className="py-2 px-3">#</th>
+                          <th className="py-2 px-3">Title</th>
+                          <th className="py-2 px-3">Type</th>
+                          <th className="py-2 px-3">Category</th>
+                          <th className="py-2 px-3">Difficulty</th>
+                          <th className="py-2 px-3">Metadata</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-slate-100 text-xs">
+                        {parsedBulkItems.map((item, idx) => (
+                          <tr key={idx} className="hover:bg-slate-50">
+                            <td className="py-2 px-3 font-bold text-slate-400">{idx + 1}</td>
+                            <td className="py-2 px-3 font-semibold text-slate-900 truncate max-w-xs" title={item.title}>
+                              {item.title}
+                            </td>
+                            <td className="py-2 px-3">
+                              <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
+                                item.type === "CODING"
+                                  ? "bg-purple-50 text-purple-700 border border-purple-200"
+                                  : "bg-indigo-50 text-indigo-700 border border-indigo-200"
+                              }`}>
+                                {item.type}
+                              </span>
+                            </td>
+                            <td className="py-2 px-3 text-slate-600">{item.category}</td>
+                            <td className="py-2 px-3 font-mono text-slate-700 font-bold">{item.difficulty}</td>
+                            <td className="py-2 px-3 text-slate-500">
+                              {item.type === "CODING"
+                                ? `${Array.isArray(item.testCases) ? item.testCases.length : 0} test cases`
+                                : `${Array.isArray(item.options) ? item.options.length : 0} options`}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Modal Footer */}
+            <div className="p-4 bg-slate-50 border-t border-slate-200 flex items-center justify-between">
+              <span className="text-xs text-slate-500">
+                {parsedBulkItems.length > 0 ? `${parsedBulkItems.length} questions ready for batch transaction.` : "No file loaded."}
+              </span>
+              <div className="flex items-center gap-2.5">
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    setIsBulkModalOpen(false);
+                    setParsedBulkItems([]);
+                    setBulkFile(null);
+                  }}
+                  disabled={bulkImporting}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  type="button"
+                  variant="primary"
+                  size="sm"
+                  icon={UploadCloud}
+                  loading={bulkImporting}
+                  disabled={parsedBulkItems.length === 0}
+                  onClick={handleExecuteBulkImport}
+                  className="bg-purple-600 hover:bg-purple-700 text-white shadow-sm"
+                >
+                  Import {parsedBulkItems.length > 0 ? `${parsedBulkItems.length} Questions` : "Batch"}
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
       {selectedQuestion && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/70 backdrop-blur-sm animate-fadeIn">
           <div className="relative w-full max-w-3xl bg-white rounded-2xl shadow-2xl border border-slate-100 overflow-hidden max-h-[88vh] flex flex-col">

@@ -50,9 +50,10 @@ export const superAdminService = {
    * Direct Create / Provision a new Institution from SuperAdmin
    */
   async createInstitution(institutionData) {
+    const defaultLoginUrl = typeof window !== 'undefined' ? `${window.location.origin}/login` : '';
     return api.post('/api/super-admin/colleges/create', {
       ...institutionData,
-      loginUrl: institutionData.loginUrl || 'http://localhost:5174/login'
+      loginUrl: institutionData.loginUrl || defaultLoginUrl
     });
   },
 
@@ -60,9 +61,10 @@ export const superAdminService = {
    * Resend or regenerate credentials for an approved institution
    */
   async resendCredentials(id, { tempPassword, loginUrl } = {}) {
+    const defaultLoginUrl = typeof window !== 'undefined' ? `${window.location.origin}/login` : '';
     return api.post(`/api/super-admin/colleges/${id}/resend-credentials`, {
       tempPassword,
-      loginUrl: loginUrl || 'http://localhost:5174/login'
+      loginUrl: loginUrl || defaultLoginUrl
     });
   },
 
@@ -156,5 +158,12 @@ export const superAdminService = {
    */
   async activateGlobalQuestion(questionId) {
     return api.post(`/api/super-admin/questions/${questionId}/activate`);
+  },
+
+  /**
+   * Bulk Ingestion / Import questions from JSON/CSV payload
+   */
+  async bulkImportQuestions(items) {
+    return api.post('/api/super-admin/questions/bulk-import', { items });
   }
 };

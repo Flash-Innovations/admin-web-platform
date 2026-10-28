@@ -58,7 +58,7 @@ export function AuthProvider({ children }) {
     const userData = {
       id: data.userId || "super_admin_root",
       name: data.name || data.user?.name || "System Super Administrator",
-      email: data.email || data.user?.email || (identifier.includes("@") ? identifier : "superadmin@sips.edu"),
+      email: data.email || data.user?.email || (identifier.includes("@") ? identifier : "admin@flashedu.in"),
       username: data.username || data.user?.username || "superadmin",
       role: "super_admin",
       backendRole: data.role || "SUPERADMIN",

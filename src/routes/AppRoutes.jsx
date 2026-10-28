@@ -9,7 +9,6 @@ const lazyNamed = (importFn, name) =>
 
 // Eagerly loaded public entry pages for instant first paint
 import { LoginPage } from "../pages/auth/LoginPage";
-import { LandingPage } from "../pages/LandingPage";
 import { NotFoundPage } from "../pages/NotFoundPage";
 
 // Lazy-loaded Public / Legal Pages
@@ -43,8 +42,8 @@ export function AppRoutes() {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/admin/login" element={<LoginPage />} />
 
-        {/* Platform Overview & Legal */}
-        <Route path="/landing" element={<LandingPage />} />
+        {/* Platform Legal Pages */}
+        <Route path="/landing" element={<Navigate to="/login" replace />} />
         <Route path="/privacy" element={<PrivacyPolicyPage />} />
         <Route path="/terms" element={<TermsOfServicePage />} />
         <Route path="/security" element={<DataSecurityPage />} />
@@ -57,6 +56,8 @@ export function AppRoutes() {
         <Route path="/reports" element={<Navigate to="/super-admin/reports" replace />} />
         <Route path="/approvals" element={<Navigate to="/super-admin/dashboard" replace />} />
         <Route path="/institutions" element={<Navigate to="/super-admin/dashboard" replace />} />
+        <Route path="/super-admin/approvals" element={<Navigate to="/super-admin/dashboard" replace />} />
+        <Route path="/super-admin/institutions" element={<Navigate to="/super-admin/dashboard" replace />} />
 
         {/* Super Admin Console Routes */}
         <Route element={<ProtectedRoute allowedRoles={["super_admin"]} />}>
@@ -73,6 +74,8 @@ export function AppRoutes() {
             <Route path="/super_admin/gd" element={<GdAdminPage />} />
             <Route path="/super_admin/questions" element={<GlobalQuestionBankPage />} />
             <Route path="/super_admin/reports" element={<ReportsGeneratorPage />} />
+            <Route path="/superadmin/approvals" element={<Navigate to="/super-admin/dashboard" replace />} />
+            <Route path="/super_admin/approvals" element={<Navigate to="/super-admin/dashboard" replace />} />
             <Route path="/superadmin/*" element={<Navigate to="/super-admin/dashboard" replace />} />
             <Route path="/super_admin/*" element={<Navigate to="/super-admin/dashboard" replace />} />
           </Route>

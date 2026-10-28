@@ -82,10 +82,10 @@ export function LoginPage() {
           <ShieldCheck className="w-8 h-8" />
         </div>
         <h1 className="text-xl font-black tracking-tight text-white uppercase">
-          SIPS Platform Administration
+          Flash Platform Administration
         </h1>
         <p className="mt-1 text-xs text-slate-400 max-w-sm mx-auto">
-          Root governance console for platform owners & system administrators.
+          Root governance & master operations console for platform owners & system administrators.
         </p>
       </div>
 

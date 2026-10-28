@@ -102,5 +102,19 @@ export const adminService = {
    */
   async createOfficialGdRoom(roomData) {
     return api.post("/api/b2c/admin/gd/create-official", roomData);
+  },
+
+  /**
+   * Group Discussions: Terminate / Conclude an active or open GD room
+   */
+  async terminateGdRoom(id) {
+    return api.post(`/api/b2c/admin/gd/rooms/${id}/terminate`);
+  },
+
+  /**
+   * Group Discussions: Delete a GD room
+   */
+  async deleteGdRoom(id) {
+    return api.delete(`/api/b2c/admin/gd/rooms/${id}`);
   }
 };
