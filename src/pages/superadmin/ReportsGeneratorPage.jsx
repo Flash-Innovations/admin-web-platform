@@ -411,7 +411,7 @@ export function ReportsGeneratorPage() {
                   </span>
                 </div>
                 <div className="flex items-center justify-between p-3 rounded-xl bg-slate-50">
-                  <span className="text-slate-600">Batch of 2028 Concentration:</span>
+                  <span className="text-slate-600">Primary Cohort Concentration:</span>
                   <span className="font-black text-indigo-600">
                     {investorData?.traction?.targetBatch2028Concentration || "—"}
                   </span>
@@ -534,7 +534,7 @@ export function ReportsGeneratorPage() {
                         {c.technicalRatioPercent}% Engineering
                       </td>
                       <td className="py-2.5 px-3 text-slate-500">
-                        {(c.batchDistribution || ["2028"]).join(", ")}
+                        {(c.batchDistribution || ["All Batches"]).join(", ")}
                       </td>
                     </tr>
                   ))}
@@ -574,7 +574,7 @@ export function ReportsGeneratorPage() {
             <Card className="p-4 border-slate-200">
               <p className="text-[11px] font-bold uppercase text-slate-500">Primary Audience</p>
               <p className="mt-1 text-xl font-black text-indigo-600">
-                Batch of 2028 & 2027
+                Active Campus Cohorts
               </p>
               <p className="text-[11px] text-slate-400 mt-1">Ready for 2026/27 intern & FTE hiring</p>
             </Card>

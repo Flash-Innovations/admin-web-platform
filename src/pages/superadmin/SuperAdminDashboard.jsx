@@ -110,13 +110,13 @@ export function SuperAdminDashboard() {
         <StatCard
           title="Total Registered Students"
           value={data.totalStudents.toLocaleString()}
-          subtitle={`${data.batch2028Percent}% Batch 2028 Target Cohort`}
+          subtitle={`${data.batch2028Percent || 0}% Primary Placement Cohort`}
           icon={Users}
           iconBg="bg-indigo-50 text-indigo-600"
           trend={{
-            value: `${data.batch2028Count} in '28`,
+            value: `${data.batch2028Count || data.totalStudents} Active Students`,
             direction: "up",
-            label: "Core audience"
+            label: "Candidate pool"
           }}
         />
 
