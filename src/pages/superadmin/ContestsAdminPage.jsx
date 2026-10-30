@@ -217,6 +217,7 @@ export function ContestsAdminPage() {
         next[qId] = {
           id: qId,
           questionId: qId,
+          questionVersionId: q.versionId || q.latestVersionId || q.activeVersionId || q.questionVersionId || (q.versions && q.versions[0]?.id) || qId,
           title: q.title || q.latestTitle || "Untitled Question",
           type: q.type,
           category: q.category || "General",
@@ -274,6 +275,7 @@ export function ContestsAdminPage() {
             next[q.id] = {
               id: q.id,
               questionId: q.id,
+              questionVersionId: q.versionId || q.latestVersionId || q.activeVersionId || q.questionVersionId || (q.versions && q.versions[0]?.id) || q.id,
               title: q.title || q.latestTitle || "Untitled Question",
               type: q.type,
               category: q.category || "General",
@@ -319,12 +321,14 @@ export function ContestsAdminPage() {
 
     try {
       setSubmitting(true);
-      const questionPayload = selectedList.map((q) => ({
+      const questionPayload = selectedList.map((q, idx) => ({
         id: q.id,
-        questionId: q.id,
+        questionId: q.questionId || q.id,
+        questionVersionId: q.questionVersionId || q.versionId || q.latestVersionId || q.activeVersionId || (q.versions && q.versions[0]?.id) || q.id,
         marks: Number(q.marks) || (q.type === "CODING" ? 10 : 2),
         negativeMarks: Number(q.negativeMarks) || 0,
-        section: q.section || (q.type === "CODING" ? "CODING" : "APTITUDE")
+        section: q.section || (q.type === "CODING" ? "CODING" : "APTITUDE"),
+        order: idx + 1
       }));
 
       const isDraft = forcedStatus === "DRAFT";
@@ -1425,47 +1429,56 @@ export function ContestsAdminPage() {
               </div>
 
               <div className="border border-slate-200 rounded-xl divide-y divide-slate-100 max-h-[420px] overflow-y-auto bg-white">
-                {viewContestData.questions.map((q, idx) => (
-                  <div key={q.contestQuestionId || idx} className="p-3.5 flex items-start gap-3 text-xs">
-                    <span className="w-6 h-6 rounded-full bg-indigo-50 text-indigo-700 font-bold flex items-center justify-center text-xs shrink-0 mt-0.5">
-                      {q.order || idx + 1}
-                    </span>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-1 flex-wrap">
-                        <span className="font-bold text-slate-900">{q.title}</span>
-                        <Badge
-                          variant={q.type === "CODING" ? "indigo" : "amber"}
-                          size="sm"
-                          className="text-[10px]"
-                        >
-                          {q.type}
-                        </Badge>
-                        <Badge
-                          variant={
-                            q.difficulty === "EASY"
-                              ? "emerald"
-                              : q.difficulty === "HARD"
-                              ? "rose"
-                              : "amber"
-                          }
-                          size="sm"
-                          className="text-[10px]"
-                        >
-                          {q.difficulty}
-                        </Badge>
-                        <span className="text-[10px] text-slate-500 bg-slate-100 px-2 py-0.5 rounded font-medium">
-                          Section: {q.section}
+                {viewContestData.questions.map((q, idx) => {
+                  const title = q.title || q.questionVersion?.title || "Untitled Question";
+                  const type = q.type || q.questionVersion?.question?.type || (q.section === "CODING" ? "CODING" : "APTITUDE");
+                  const difficulty = q.difficulty || q.questionVersion?.question?.difficulty || "MEDIUM";
+                  const statement = q.statement || q.questionVersion?.statement || "";
+                  const section = q.section || (type === "CODING" ? "CODING" : "APTITUDE");
+                  const marks = q.marks !== undefined ? Number(q.marks) : (type === "CODING" ? 10 : 2);
+
+                  return (
+                    <div key={q.contestQuestionId || q.id || idx} className="p-3.5 flex items-start gap-3 text-xs">
+                      <span className="w-6 h-6 rounded-full bg-indigo-50 text-indigo-700 font-bold flex items-center justify-center text-xs shrink-0 mt-0.5">
+                        {q.order || idx + 1}
+                      </span>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-1 flex-wrap">
+                          <span className="font-bold text-slate-900">{title}</span>
+                          <Badge
+                            variant={type === "CODING" ? "indigo" : "amber"}
+                            size="sm"
+                            className="text-[10px]"
+                          >
+                            {type}
+                          </Badge>
+                          <Badge
+                            variant={
+                              difficulty === "EASY"
+                                ? "emerald"
+                                : difficulty === "HARD"
+                                ? "rose"
+                                : "amber"
+                            }
+                            size="sm"
+                            className="text-[10px]"
+                          >
+                            {difficulty}
+                          </Badge>
+                          <span className="text-[10px] text-slate-500 bg-slate-100 px-2 py-0.5 rounded font-medium">
+                            Section: {section}
+                          </span>
+                        </div>
+                        {statement && <p className="text-xs text-slate-500 line-clamp-2">{statement}</p>}
+                      </div>
+                      <div className="text-right shrink-0">
+                        <span className="font-black text-indigo-700 bg-indigo-50 px-2.5 py-1 rounded-md text-xs">
+                          {marks} pts
                         </span>
                       </div>
-                      <p className="text-xs text-slate-500 line-clamp-2">{q.statement}</p>
                     </div>
-                    <div className="text-right shrink-0">
-                      <span className="font-black text-indigo-700 bg-indigo-50 px-2.5 py-1 rounded-md text-xs">
-                        {q.marks} pts
-                      </span>
-                    </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
           )}
