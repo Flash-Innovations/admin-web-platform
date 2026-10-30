@@ -70,6 +70,7 @@ export function ContestsAdminPage() {
   const [formDuration, setFormDuration] = useState(90);
   const [formTierRequired, setFormTierRequired] = useState("FREE");
   const [formEntryFee, setFormEntryFee] = useState(0);
+  const [formTargetDomain, setFormTargetDomain] = useState("ALL");
 
   // PostgreSQL Question Bank Selector State
   const [bankQuestions, setBankQuestions] = useState([]);
@@ -337,6 +338,7 @@ export function ContestsAdminPage() {
         durationMinutes: parseInt(formDuration, 10) || 90,
         tierRequired: formTierRequired,
         entryFee: parseInt(formEntryFee, 10) || 0,
+        targetDomain: formTargetDomain,
         status: isDraft ? "DRAFT" : "PUBLISHED",
         questionIds: Object.keys(selectedQuestions),
         questions: questionPayload
@@ -357,7 +359,9 @@ export function ContestsAdminPage() {
         setFormStartAt("");
         setFormEndAt("");
         setFormDuration(90);
+        setFormTierRequired("FREE");
         setFormEntryFee(0);
+        setFormTargetDomain("ALL");
         setSelectedQuestions({});
         loadContests();
       }
@@ -579,6 +583,10 @@ export function ContestsAdminPage() {
                       <Tag className="w-3.5 h-3.5 text-slate-400 shrink-0" />
                       <span>Min Tier: {c.tierRequired || "FREE"}</span>
                     </div>
+                    <div className="flex items-center gap-2">
+                      <Layers className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                      <span>Domain: {c.targetDomain === "TECHNICAL" ? "Technical Domain" : (c.targetDomain === "MANAGEMENT" ? "Management Domain" : "Open to All")}</span>
+                    </div>
                   </div>
                 </div>
 
@@ -772,6 +780,21 @@ export function ContestsAdminPage() {
                     onChange={(e) => setFormDuration(e.target.value)}
                     className="w-full px-3 py-2 text-xs rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500"
                   />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 uppercase mb-1">
+                    Target Candidate Domain
+                  </label>
+                  <select
+                    value={formTargetDomain}
+                    onChange={(e) => setFormTargetDomain(e.target.value)}
+                    className="w-full px-3 py-2 text-xs rounded-xl border border-slate-300 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 font-medium"
+                  >
+                    <option value="ALL">Open to All Candidates (General Aptitude / Mixed)</option>
+                    <option value="TECHNICAL">Technical Domain Only (Engineering / SDE / CS)</option>
+                    <option value="MANAGEMENT">Management Domain Only (MBA / BBA / Business)</option>
+                  </select>
                 </div>
 
                 <div>
