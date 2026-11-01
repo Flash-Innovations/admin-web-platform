@@ -98,7 +98,10 @@ export function GlobalQuestionBankPage() {
       setTopicsLoading(true);
       const res = await superAdminService.getTopics();
       if (res && res.data && Array.isArray(res.data)) {
-        setTopics(res.data);
+        const activeTopics = res.data.filter(
+          (t) => Number(t.count || t.questionCount || 0) > 0
+        );
+        setTopics(activeTopics);
       }
     } catch (err) {
       console.warn("Could not load dynamic topics catalog:", err);
@@ -753,7 +756,9 @@ export function GlobalQuestionBankPage() {
             >
               All Topics
             </button>
-            {topics.map((t) => {
+            {topics
+              .filter((t) => Number(t.count || t.questionCount || 0) > 0)
+              .map((t) => {
               const isSelected = selectedTopic === t.name;
               return (
                 <button

@@ -120,7 +120,10 @@ export function ContestsAdminPage() {
       setTopicsLoading(true);
       const res = await superAdminService.getTopics();
       if (res.success && Array.isArray(res.data)) {
-        setBankTopics(res.data);
+        const activeTopics = res.data.filter(
+          (top) => Number(top.count || top.questionCount || 0) > 0
+        );
+        setBankTopics(activeTopics);
       }
     } catch (err) {
       console.error("Failed to load topics:", err);
@@ -945,7 +948,9 @@ export function ContestsAdminPage() {
                   >
                     All Topics
                   </button>
-                  {bankTopics.map((top) => (
+                  {bankTopics
+                    .filter((top) => Number(top.count || top.questionCount || 0) > 0)
+                    .map((top) => (
                     <button
                       key={top.name}
                       type="button"
@@ -959,7 +964,7 @@ export function ContestsAdminPage() {
                           : "bg-white text-slate-600 hover:bg-slate-200 border border-slate-200"
                       }`}
                     >
-                      {top.name} ({top.count || 0})
+                      {top.name} ({top.count || top.questionCount || 0})
                     </button>
                   ))}
                 </div>
