@@ -90,7 +90,16 @@ export const superAdminService = {
     if (filters.status && filters.status !== 'ALL') params.append('status', filters.status);
     
     const qs = params.toString() ? `?${params.toString()}` : '';
-    return api.get(`/api/super-admin/questions${qs}`);
+    try {
+      return await api.get(`/api/super-admin/questions${qs}`);
+    } catch (err) {
+      if (filters.type === 'MCQ') {
+        const fallbackParams = new URLSearchParams(params);
+        fallbackParams.set('type', 'TECHNICAL');
+        return await api.get(`/api/super-admin/questions?${fallbackParams.toString()}`);
+      }
+      throw err;
+    }
   },
 
   /**
