@@ -80,7 +80,7 @@ export function GlobalQuestionBankPage() {
   const [formCategory, setFormCategory] = useState("Algorithms");
   const [formDifficulty, setFormDifficulty] = useState("MEDIUM");
   const [formTags, setFormTags] = useState("arrays, dynamic-programming");
-  
+
   // Interactive Test Cases Builder State
   const [testCaseMode, setTestCaseMode] = useState("VISUAL"); // VISUAL | RAW
   const [visualTestCases, setVisualTestCases] = useState([
@@ -459,7 +459,7 @@ export function GlobalQuestionBankPage() {
               if (row.testCases) {
                 try {
                   parsedTestCases = JSON.parse(row.testCases);
-                } catch (err) {}
+                } catch (err) { }
               }
 
               items.push({
@@ -646,11 +646,10 @@ export function GlobalQuestionBankPage() {
                 key={st.id}
                 type="button"
                 onClick={() => setStatusFilter(st.id)}
-                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
-                  statusFilter === st.id
+                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${statusFilter === st.id
                     ? "bg-white text-slate-900 shadow-sm"
                     : "text-slate-500 hover:text-slate-800"
-                }`}
+                  }`}
               >
                 {st.label}
               </button>
@@ -686,9 +685,8 @@ export function GlobalQuestionBankPage() {
                   key={t}
                   type="button"
                   onClick={() => setTypeFilter(t)}
-                  className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-colors ${
-                    typeFilter === t ? "bg-purple-600 text-white font-bold" : "bg-slate-100 text-slate-600 hover:bg-slate-200"
-                  }`}
+                  className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-colors ${typeFilter === t ? "bg-purple-600 text-white font-bold" : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                    }`}
                 >
                   {t}
                 </button>
@@ -704,9 +702,8 @@ export function GlobalQuestionBankPage() {
                   key={d}
                   type="button"
                   onClick={() => setDifficultyFilter(d)}
-                  className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-colors ${
-                    difficultyFilter === d ? "bg-purple-600 text-white font-bold" : "bg-slate-100 text-slate-600 hover:bg-slate-200"
-                  }`}
+                  className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-colors ${difficultyFilter === d ? "bg-purple-600 text-white font-bold" : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                    }`}
                 >
                   {d}
                 </button>
@@ -748,42 +745,39 @@ export function GlobalQuestionBankPage() {
             <button
               type="button"
               onClick={() => setSelectedTopic("")}
-              className={`px-3 py-1.5 rounded-lg text-xs font-semibold shrink-0 transition-all ${
-                !selectedTopic
+              className={`px-3 py-1.5 rounded-lg text-xs font-semibold shrink-0 transition-all ${!selectedTopic
                   ? "bg-slate-900 text-white shadow-sm font-bold"
                   : "bg-slate-100 text-slate-600 hover:bg-slate-200"
-              }`}
+                }`}
             >
-              All Topics
+              All Subjects
             </button>
             {topics
               .filter((t) => Number(t.count || t.questionCount || 0) > 0)
               .map((t) => {
-              const isSelected = selectedTopic === t.name;
-              return (
-                <button
-                  key={t.name}
-                  type="button"
-                  onClick={() => setSelectedTopic(isSelected ? "" : t.name)}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-semibold shrink-0 transition-all flex items-center gap-1.5 ${
-                    isSelected
-                      ? "bg-purple-600 text-white shadow-sm font-bold"
-                      : "bg-slate-100 text-slate-600 hover:bg-slate-200"
-                  }`}
-                >
-                  <span>{t.name}</span>
-                  <span
-                    className={`text-[10px] px-1.5 py-0.5 rounded-full font-bold ${
-                      isSelected
-                        ? "bg-purple-700 text-purple-100"
-                        : "bg-slate-200 text-slate-700"
-                    }`}
+                const isSelected = selectedTopic === t.name;
+                return (
+                  <button
+                    key={t.name}
+                    type="button"
+                    onClick={() => setSelectedTopic(isSelected ? "" : t.name)}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-semibold shrink-0 transition-all flex items-center gap-1.5 ${isSelected
+                        ? "bg-purple-600 text-white shadow-sm font-bold"
+                        : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                      }`}
                   >
-                    {t.questionCount}
-                  </span>
-                </button>
-              );
-            })}
+                    <span>{t.name}</span>
+                    <span
+                      className={`text-[10px] px-1.5 py-0.5 rounded-full font-bold ${isSelected
+                          ? "bg-purple-700 text-purple-100"
+                          : "bg-slate-200 text-slate-700"
+                        }`}
+                    >
+                      {t.questionCount}
+                    </span>
+                  </button>
+                );
+              })}
             {topics.length === 0 && !topicsLoading && (
               <span className="text-xs text-slate-400 italic">No topics found in database</span>
             )}
@@ -881,11 +875,10 @@ export function GlobalQuestionBankPage() {
             return (
               <div
                 key={q.id}
-                className={`p-4 rounded-xl border transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-4 ${
-                  isSelected
+                className={`p-4 rounded-xl border transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-4 ${isSelected
                     ? "bg-purple-50/60 border-purple-300 shadow-sm ring-1 ring-purple-400/30"
                     : "bg-white border-slate-200 hover:border-slate-300 shadow-sm"
-                }`}
+                  }`}
               >
                 <div className="flex items-start gap-3.5 flex-1 min-w-0">
                   {/* Select Checkbox */}
@@ -905,9 +898,8 @@ export function GlobalQuestionBankPage() {
                     <div className="flex flex-wrap items-center gap-2">
                       {/* Type Badge */}
                       <span
-                        className={`px-2 py-0.5 rounded text-[11px] font-bold flex items-center gap-1 ${
-                          isCoding ? "bg-blue-50 text-blue-700 border border-blue-200/60" : "bg-amber-50 text-amber-700 border border-amber-200/60"
-                        }`}
+                        className={`px-2 py-0.5 rounded text-[11px] font-bold flex items-center gap-1 ${isCoding ? "bg-blue-50 text-blue-700 border border-blue-200/60" : "bg-amber-50 text-amber-700 border border-amber-200/60"
+                          }`}
                       >
                         {isCoding ? <Code2 className="w-3 h-3" /> : <HelpCircle className="w-3 h-3" />}
                         {q.type}
@@ -923,13 +915,12 @@ export function GlobalQuestionBankPage() {
 
                       {/* Difficulty Badge */}
                       <span
-                        className={`px-2 py-0.5 rounded text-[10px] font-bold ${
-                          q.difficulty === "EASY"
+                        className={`px-2 py-0.5 rounded text-[10px] font-bold ${q.difficulty === "EASY"
                             ? "bg-emerald-100 text-emerald-800"
                             : q.difficulty === "MEDIUM"
-                            ? "bg-amber-100 text-amber-800"
-                            : "bg-rose-100 text-rose-800"
-                        }`}
+                              ? "bg-amber-100 text-amber-800"
+                              : "bg-rose-100 text-rose-800"
+                          }`}
                       >
                         {q.difficulty}
                       </span>
@@ -1197,11 +1188,10 @@ export function GlobalQuestionBankPage() {
                   <button
                     type="button"
                     onClick={() => setFormType("CODING")}
-                    className={`p-3 rounded-xl border text-left transition-all flex items-center gap-3 ${
-                      formType === "CODING"
+                    className={`p-3 rounded-xl border text-left transition-all flex items-center gap-3 ${formType === "CODING"
                         ? "border-purple-600 bg-purple-50/50 text-purple-950 font-bold shadow-sm"
                         : "border-slate-200 hover:bg-slate-50 text-slate-700"
-                    }`}
+                      }`}
                   >
                     <Code2 className="w-5 h-5 text-purple-600" />
                     <div>
@@ -1213,11 +1203,10 @@ export function GlobalQuestionBankPage() {
                   <button
                     type="button"
                     onClick={() => setFormType("MCQ")}
-                    className={`p-3 rounded-xl border text-left transition-all flex items-center gap-3 ${
-                      formType === "MCQ"
+                    className={`p-3 rounded-xl border text-left transition-all flex items-center gap-3 ${formType === "MCQ"
                         ? "border-purple-600 bg-purple-50/50 text-purple-950 font-bold shadow-sm"
                         : "border-slate-200 hover:bg-slate-50 text-slate-700"
-                    }`}
+                      }`}
                   >
                     <HelpCircle className="w-5 h-5 text-purple-600" />
                     <div>
@@ -1313,22 +1302,20 @@ export function GlobalQuestionBankPage() {
                       <button
                         type="button"
                         onClick={() => setTestCaseMode("VISUAL")}
-                        className={`px-2 py-1 text-[10px] font-bold rounded-md transition-all cursor-pointer ${
-                          testCaseMode === "VISUAL"
+                        className={`px-2 py-1 text-[10px] font-bold rounded-md transition-all cursor-pointer ${testCaseMode === "VISUAL"
                             ? "bg-white text-purple-700 shadow-2xs"
                             : "text-slate-500 hover:text-slate-700"
-                        }`}
+                          }`}
                       >
                         Visual Builder
                       </button>
                       <button
                         type="button"
                         onClick={() => setTestCaseMode("RAW")}
-                        className={`px-2 py-1 text-[10px] font-bold rounded-md transition-all cursor-pointer ${
-                          testCaseMode === "RAW"
+                        className={`px-2 py-1 text-[10px] font-bold rounded-md transition-all cursor-pointer ${testCaseMode === "RAW"
                             ? "bg-white text-purple-700 shadow-2xs"
                             : "text-slate-500 hover:text-slate-700"
-                        }`}
+                          }`}
                       >
                         Raw JSON
                       </button>
@@ -1475,11 +1462,10 @@ export function GlobalQuestionBankPage() {
                       return (
                         <div
                           key={idx}
-                          className={`p-2.5 rounded-xl border flex items-center gap-2.5 transition-colors ${
-                            isCorrect
+                          className={`p-2.5 rounded-xl border flex items-center gap-2.5 transition-colors ${isCorrect
                               ? "bg-purple-50/60 border-purple-300"
                               : "bg-slate-50 border-slate-200"
-                          }`}
+                            }`}
                         >
                           <label className="flex items-center gap-2 cursor-pointer shrink-0">
                             <input
@@ -1686,11 +1672,10 @@ export function GlobalQuestionBankPage() {
                               {item.title}
                             </td>
                             <td className="py-2 px-3">
-                              <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
-                                item.type === "CODING"
+                              <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${item.type === "CODING"
                                   ? "bg-purple-50 text-purple-700 border border-purple-200"
                                   : "bg-indigo-50 text-indigo-700 border border-indigo-200"
-                              }`}>
+                                }`}>
                                 {item.type}
                               </span>
                             </td>

@@ -932,7 +932,7 @@ export function ContestsAdminPage() {
                 {/* Topic / Category Chips */}
                 <div className="flex items-center gap-1.5 overflow-x-auto pb-1 text-xs">
                   <span className="text-[11px] font-bold text-slate-400 uppercase shrink-0 mr-1">
-                    Topics:
+                    Subjects:
                   </span>
                   <button
                     type="button"
@@ -946,7 +946,7 @@ export function ContestsAdminPage() {
                         : "bg-white text-slate-600 hover:bg-slate-200 border border-slate-200"
                     }`}
                   >
-                    All Topics
+                    All Subjects
                   </button>
                   {bankTopics
                     .filter((top) => Number(top.count || top.questionCount || 0) > 0)
