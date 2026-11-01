@@ -81,6 +81,7 @@ export function ContestsAdminPage() {
   // Selector Filter State
   const [qSearch, setQSearch] = useState("");
   const [qTopic, setQTopic] = useState("ALL");
+  const [qSubjectId, setQSubjectId] = useState(null);
   const [qType, setQType] = useState("ALL");
   const [qDifficulty, setQDifficulty] = useState("ALL");
   const [qPage, setQPage] = useState(1);
@@ -147,6 +148,7 @@ export function ContestsAdminPage() {
         status: "ACTIVE",
         search: qSearch.trim(),
         topic: qTopic !== "ALL" ? qTopic : undefined,
+        subjectId: qSubjectId || undefined,
         type: qType !== "ALL" ? qType : undefined,
         difficulty: qDifficulty !== "ALL" ? qDifficulty : undefined
       };
@@ -938,6 +940,7 @@ export function ContestsAdminPage() {
                     type="button"
                     onClick={() => {
                       setQTopic("ALL");
+                      setQSubjectId(null);
                       setQPage(1);
                     }}
                     className={`px-2.5 py-1 rounded-md text-[11px] font-bold transition-all shrink-0 cursor-pointer ${
@@ -956,6 +959,7 @@ export function ContestsAdminPage() {
                       type="button"
                       onClick={() => {
                         setQTopic(top.name);
+                        setQSubjectId(top.id && top.id !== top.name ? top.id : null);
                         setQPage(1);
                       }}
                       className={`px-2.5 py-1 rounded-md text-[11px] font-bold transition-all shrink-0 cursor-pointer ${

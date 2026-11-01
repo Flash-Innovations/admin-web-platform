@@ -85,6 +85,7 @@ export const superAdminService = {
     if (filters.limit) params.append('limit', filters.limit);
     if (filters.search) params.append('search', filters.search);
     if (filters.topic && filters.topic !== 'ALL') params.append('topic', filters.topic);
+    if (filters.subjectId && filters.subjectId !== 'ALL') params.append('subjectId', filters.subjectId);
     if (filters.type && filters.type !== 'ALL') params.append('type', filters.type);
     if (filters.difficulty && filters.difficulty !== 'ALL') params.append('difficulty', filters.difficulty);
     if (filters.status && filters.status !== 'ALL') params.append('status', filters.status);
