@@ -390,15 +390,23 @@ export function ContestsAdminPage() {
   };
 
   const handleDeleteContest = async (id) => {
+    if (!id) return;
     if (!window.confirm("Are you sure you want to cancel and remove this contest?")) return;
     try {
+      // Optimistically update list for immediate responsiveness
+      setContests((prev) => prev.filter((c) => (c.id || c._id) !== id && (c._id || c.id) !== id));
       const res = await adminService.deleteContest(id);
-      if (res.success) {
-        showSuccess("Contest cancelled successfully");
+      if (res && (res.success || res.deleted)) {
+        showSuccess(res.message || "Contest cancelled successfully");
+        loadContests();
+      } else {
+        showError(res?.message || "Failed to delete contest");
         loadContests();
       }
     } catch (err) {
-      showError("Failed to delete contest");
+      console.error("Contest deletion error:", err);
+      showError(err.message || "Failed to delete contest");
+      loadContests();
     }
   };
 
