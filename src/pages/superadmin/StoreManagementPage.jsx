@@ -113,11 +113,8 @@ export function StoreManagementPage() {
       const res = await superAdminService.getStoreItems({
         category: itemCategoryFilter
       });
-      if (res && res.data) {
-        setItems(res.data);
-      } else if (Array.isArray(res)) {
-        setItems(res);
-      }
+      const list = res?.data || res?.items || (Array.isArray(res) ? res : []);
+      setItems(list);
     } catch (err) {
       showError(err.message || "Failed to load store items");
     } finally {
@@ -130,11 +127,8 @@ export function StoreManagementPage() {
     try {
       setCouponsLoading(true);
       const res = await superAdminService.getCoupons();
-      if (res && res.data) {
-        setCoupons(res.data);
-      } else if (Array.isArray(res)) {
-        setCoupons(res);
-      }
+      const list = res?.data || res?.coupons || (Array.isArray(res) ? res : []);
+      setCoupons(list);
     } catch (err) {
       showError(err.message || "Failed to load coupons");
     } finally {
@@ -147,8 +141,9 @@ export function StoreManagementPage() {
     try {
       setAnalyticsLoading(true);
       const res = await superAdminService.getStoreAnalytics();
-      if (res && res.data) {
-        setAnalytics(res.data);
+      const data = res?.data || res?.analytics || res;
+      if (data) {
+        setAnalytics(data);
       }
     } catch (err) {
       showError(err.message || "Failed to load store analytics");
@@ -157,8 +152,11 @@ export function StoreManagementPage() {
     }
   };
 
+  // Initial load - populate both store catalog and coupons so metric pulse displays immediately
   useEffect(() => {
     loadStoreItems();
+    loadCoupons();
+    loadAnalytics();
   }, [itemCategoryFilter]);
 
   useEffect(() => {
