@@ -176,4 +176,58 @@ export const superAdminService = {
   async bulkImportQuestions(items) {
     return api.post('/api/super-admin/questions/bulk-import', { items });
   }
+,
+  /**
+   * Dynamic Store Items (Plans, Festive Offers, Passes, Minute Packs)
+   */
+  async getStoreItems(filters = {}) {
+    const params = new URLSearchParams();
+    if (filters.category && filters.category !== 'ALL') params.append('category', filters.category);
+    if (filters.isPublished !== undefined && filters.isPublished !== 'ALL') params.append('isPublished', filters.isPublished);
+    const qs = params.toString() ? '?' + params.toString() : '';
+    return api.get('/api/b2c/admin/store/items' + qs);
+  },
+
+  async createStoreItem(itemData) {
+    return api.post('/api/b2c/admin/store/items', itemData);
+  },
+
+  async updateStoreItem(id, itemData) {
+    return api.put('/api/b2c/admin/store/items/' + id, itemData);
+  },
+
+  async toggleStoreItemPublish(id) {
+    return api.patch('/api/b2c/admin/store/items/' + id + '/toggle');
+  },
+
+  async deleteStoreItem(id) {
+    return api.delete('/api/b2c/admin/store/items/' + id);
+  },
+
+  async getStoreAnalytics() {
+    return api.get('/api/b2c/admin/store/analytics');
+  },
+
+  /**
+   * Promotional Coupon Engine
+   */
+  async getCoupons(filters = {}) {
+    const params = new URLSearchParams();
+    if (filters.isActive !== undefined && filters.isActive !== 'ALL') params.append('isActive', filters.isActive);
+    const qs = params.toString() ? '?' + params.toString() : '';
+    return api.get('/api/b2c/admin/coupons' + qs);
+  },
+
+  async createCoupon(couponData) {
+    return api.post('/api/b2c/admin/coupons', couponData);
+  },
+
+  async toggleCouponActive(code) {
+    return api.patch('/api/b2c/admin/coupons/' + code + '/toggle');
+  },
+
+  async deleteCoupon(code) {
+    return api.delete('/api/b2c/admin/coupons/' + code);
+  }
+
 };

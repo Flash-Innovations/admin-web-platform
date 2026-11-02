@@ -10,7 +10,8 @@ import {
   ChevronLeft,
   ChevronRight,
   ShieldCheck,
-  ShieldAlert
+  ShieldAlert,
+  ShoppingBag
 } from "lucide-react";
 import Avatar from "../common/Avatar";
 import { useAuth } from "../../context/AuthContext";
@@ -25,6 +26,7 @@ export function Sidebar({ isCollapsed, setIsCollapsed, mobileOpen, setMobileOpen
     { to: "/super-admin/contests", label: "Global Contests", icon: Trophy, badge: "Live" },
     { to: "/super-admin/gd", label: "GD Arena", icon: MessageSquare },
     { to: "/super-admin/questions", label: "Question Bank", icon: BookOpen },
+    { to: "/super-admin/store", label: "Store & Plans", icon: ShoppingBag, badge: "Commerce" },
     { to: "/super-admin/reports", label: "4-Pillar Reports", icon: FileText, badge: "Deck" }
   ];
 

@@ -22,6 +22,7 @@ const ContestsAdminPage = lazyNamed(() => import("../pages/superadmin/ContestsAd
 const GdAdminPage = lazyNamed(() => import("../pages/superadmin/GdAdminPage"), "GdAdminPage");
 const GlobalQuestionBankPage = lazyNamed(() => import("../pages/superadmin/GlobalQuestionBankPage"), "GlobalQuestionBankPage");
 const ReportsGeneratorPage = lazyNamed(() => import("../pages/superadmin/ReportsGeneratorPage"), "ReportsGeneratorPage");
+const StoreManagementPage = lazyNamed(() => import("../pages/superadmin/StoreManagementPage"), "StoreManagementPage");
 
 import { PageSkeleton } from "../components/common/LoadingSkeleton";
 
@@ -54,6 +55,7 @@ export function AppRoutes() {
         <Route path="/gd" element={<Navigate to="/super-admin/gd" replace />} />
         <Route path="/questions" element={<Navigate to="/super-admin/questions" replace />} />
         <Route path="/reports" element={<Navigate to="/super-admin/reports" replace />} />
+        <Route path="/store" element={<Navigate to="/super-admin/store" replace />} />
         <Route path="/approvals" element={<Navigate to="/super-admin/dashboard" replace />} />
         <Route path="/institutions" element={<Navigate to="/super-admin/dashboard" replace />} />
         <Route path="/super-admin/approvals" element={<Navigate to="/super-admin/dashboard" replace />} />
@@ -67,6 +69,7 @@ export function AppRoutes() {
             <Route path="/super-admin/gd" element={<GdAdminPage />} />
             <Route path="/super-admin/questions" element={<GlobalQuestionBankPage />} />
             <Route path="/super-admin/reports" element={<ReportsGeneratorPage />} />
+            <Route path="/super-admin/store" element={<StoreManagementPage />} />
 
             {/* Route aliases */}
             <Route path="/super_admin/dashboard" element={<SuperAdminDashboard />} />
@@ -74,6 +77,7 @@ export function AppRoutes() {
             <Route path="/super_admin/gd" element={<GdAdminPage />} />
             <Route path="/super_admin/questions" element={<GlobalQuestionBankPage />} />
             <Route path="/super_admin/reports" element={<ReportsGeneratorPage />} />
+            <Route path="/super_admin/store" element={<StoreManagementPage />} />
             <Route path="/superadmin/approvals" element={<Navigate to="/super-admin/dashboard" replace />} />
             <Route path="/super_admin/approvals" element={<Navigate to="/super-admin/dashboard" replace />} />
             <Route path="/superadmin/*" element={<Navigate to="/super-admin/dashboard" replace />} />
