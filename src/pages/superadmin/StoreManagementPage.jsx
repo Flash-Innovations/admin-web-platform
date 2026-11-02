@@ -239,7 +239,8 @@ export function StoreManagementPage() {
       };
 
       if (editingItem) {
-        await superAdminService.updateStoreItem(editingItem._id || editingItem.id, payload);
+        const targetId = editingItem._id || editingItem.id || editingItem.slug || editingItem.itemId;
+        await superAdminService.updateStoreItem(targetId, payload);
         showSuccess(`Plan "${payload.title}" updated successfully`);
       } else {
         await superAdminService.createStoreItem(payload);
@@ -618,7 +619,7 @@ export function StoreManagementPage() {
 
                         {item.interval && (
                           <span className="text-[10px] font-medium text-slate-400">
-                            {item.interval}
+                            {item.category === "PLAN" ? "MONTHLY" : item.interval}
                           </span>
                         )}
                       </div>
@@ -666,8 +667,13 @@ export function StoreManagementPage() {
                         </span>
                       )}
                       <span className="text-[11px] text-slate-500 font-medium">
-                        / {item.interval ? item.interval.toLowerCase() : "one-time"}
+                        / {item.category === "PLAN" ? "monthly" : (item.interval ? item.interval.toLowerCase().replace('_', ' ') : "one-time")}
                       </span>
+                      {item.category === "PLAN" && item.pricing?.yearly && (
+                        <span className="text-[10px] text-slate-400 font-normal ml-auto">
+                          (₹{item.pricing.yearly}/yr)
+                        </span>
+                      )}
                     </div>
 
                     {/* Quotas Breakdown */}
