@@ -333,7 +333,14 @@ export function ContestsAdminPage() {
         marks: Number(q.marks) || (q.type === "CODING" ? 10 : 2),
         negativeMarks: Number(q.negativeMarks) || 0,
         section: q.section || (q.type === "CODING" ? "CODING" : "APTITUDE"),
-        order: idx + 1
+        order: idx + 1,
+        title: q.title || q.latestTitle || "Question " + (idx + 1),
+        statement: q.statement || "",
+        options: Array.isArray(q.options) ? q.options : [],
+        type: q.type || (q.section === "CODING" ? "CODING" : "APTITUDE"),
+        difficulty: q.difficulty || "MEDIUM",
+        constraints: q.constraints || null,
+        timeLimitMs: q.timeLimitMs || null
       }));
 
       const isDraft = forcedStatus === "DRAFT";
@@ -548,7 +555,7 @@ export function ContestsAdminPage() {
                       {c.status}
                     </Badge>
                     <span className="text-xs font-bold text-slate-500">
-                      {c.entryFee > 0 ? `₹${c.entryFee} Entry` : "FREE Access"}
+                      {Number(c.entryFee) > 0 ? `₹${c.entryFee} Entry` : "FREE Access"}
                     </span>
                   </div>
 
