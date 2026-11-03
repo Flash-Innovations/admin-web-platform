@@ -490,11 +490,10 @@ export function ContestsAdminPage() {
             <button
               key={st}
               onClick={() => setFilterStatus(st)}
-              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
-                filterStatus === st
+              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${filterStatus === st
                   ? "bg-indigo-600 text-white shadow-xs"
                   : "bg-white text-slate-600 hover:bg-slate-100 border border-slate-200"
-              }`}
+                }`}
             >
               {st}
             </button>
@@ -684,11 +683,10 @@ export function ContestsAdminPage() {
             <button
               type="button"
               onClick={() => setActiveStep(1)}
-              className={`flex items-center justify-center gap-2 py-2 px-3 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-                activeStep === 1
+              className={`flex items-center justify-center gap-2 py-2 px-3 rounded-xl text-xs font-bold transition-all cursor-pointer ${activeStep === 1
                   ? "bg-indigo-600 text-white shadow-xs"
                   : "bg-slate-100 text-slate-600 hover:bg-slate-200"
-              }`}
+                }`}
             >
               <span className="w-4 h-4 rounded-full bg-white/20 flex items-center justify-center text-[10px]">1</span>
               Contest Setup
@@ -697,11 +695,10 @@ export function ContestsAdminPage() {
             <button
               type="button"
               onClick={() => setActiveStep(2)}
-              className={`flex items-center justify-center gap-2 py-2 px-3 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-                activeStep === 2
+              className={`flex items-center justify-center gap-2 py-2 px-3 rounded-xl text-xs font-bold transition-all cursor-pointer ${activeStep === 2
                   ? "bg-indigo-600 text-white shadow-xs"
                   : "bg-slate-100 text-slate-600 hover:bg-slate-200"
-              }`}
+                }`}
             >
               <span className="w-4 h-4 rounded-full bg-white/20 flex items-center justify-center text-[10px]">2</span>
               Select Questions ({selectedCount})
@@ -710,11 +707,10 @@ export function ContestsAdminPage() {
             <button
               type="button"
               onClick={() => setActiveStep(3)}
-              className={`flex items-center justify-center gap-2 py-2 px-3 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-                activeStep === 3
+              className={`flex items-center justify-center gap-2 py-2 px-3 rounded-xl text-xs font-bold transition-all cursor-pointer ${activeStep === 3
                   ? "bg-indigo-600 text-white shadow-xs"
                   : "bg-slate-100 text-slate-600 hover:bg-slate-200"
-              }`}
+                }`}
             >
               <span className="w-4 h-4 rounded-full bg-white/20 flex items-center justify-center text-[10px]">3</span>
               Review & Marks ({selectedMetrics.totalMarks} pts)
@@ -950,34 +946,32 @@ export function ContestsAdminPage() {
                       setQSubjectId(null);
                       setQPage(1);
                     }}
-                    className={`px-2.5 py-1 rounded-md text-[11px] font-bold transition-all shrink-0 cursor-pointer ${
-                      qTopic === "ALL"
+                    className={`px-2.5 py-1 rounded-md text-[11px] font-bold transition-all shrink-0 cursor-pointer ${qTopic === "ALL"
                         ? "bg-indigo-600 text-white shadow-xs"
                         : "bg-white text-slate-600 hover:bg-slate-200 border border-slate-200"
-                    }`}
+                      }`}
                   >
                     All Subjects
                   </button>
                   {bankTopics
                     .filter((top) => Number(top.count || top.questionCount || 0) > 0)
                     .map((top) => (
-                    <button
-                      key={top.name}
-                      type="button"
-                      onClick={() => {
-                        setQTopic(top.name);
-                        setQSubjectId(top.id && top.id !== top.name ? top.id : null);
-                        setQPage(1);
-                      }}
-                      className={`px-2.5 py-1 rounded-md text-[11px] font-bold transition-all shrink-0 cursor-pointer ${
-                        qTopic === top.name
-                          ? "bg-indigo-600 text-white shadow-xs"
-                          : "bg-white text-slate-600 hover:bg-slate-200 border border-slate-200"
-                      }`}
-                    >
-                      {top.name} ({top.count || top.questionCount || 0})
-                    </button>
-                  ))}
+                      <button
+                        key={top.name}
+                        type="button"
+                        onClick={() => {
+                          setQTopic(top.name);
+                          setQSubjectId(top.id && top.id !== top.name ? top.id : null);
+                          setQPage(1);
+                        }}
+                        className={`px-2.5 py-1 rounded-md text-[11px] font-bold transition-all shrink-0 cursor-pointer ${qTopic === top.name
+                            ? "bg-indigo-600 text-white shadow-xs"
+                            : "bg-white text-slate-600 hover:bg-slate-200 border border-slate-200"
+                          }`}
+                      >
+                        {top.name} ({top.count || top.questionCount || 0})
+                      </button>
+                    ))}
                 </div>
               </div>
 
@@ -1035,9 +1029,8 @@ export function ContestsAdminPage() {
                     return (
                       <div
                         key={q.id}
-                        className={`p-3.5 flex items-start gap-3 hover:bg-slate-50/80 transition-colors ${
-                          isSelected ? "bg-indigo-50/30" : ""
-                        }`}
+                        className={`p-3.5 flex items-start gap-3 hover:bg-slate-50/80 transition-colors ${isSelected ? "bg-indigo-50/30" : ""
+                          }`}
                       >
                         {/* Checkbox */}
                         <button
@@ -1075,8 +1068,8 @@ export function ContestsAdminPage() {
                                 q.difficulty === "EASY"
                                   ? "emerald"
                                   : q.difficulty === "HARD"
-                                  ? "rose"
-                                  : "amber"
+                                    ? "rose"
+                                    : "amber"
                               }
                               size="sm"
                               className="text-[10px] uppercase font-bold"
@@ -1481,8 +1474,8 @@ export function ContestsAdminPage() {
                               difficulty === "EASY"
                                 ? "emerald"
                                 : difficulty === "HARD"
-                                ? "rose"
-                                : "amber"
+                                  ? "rose"
+                                  : "amber"
                             }
                             size="sm"
                             className="text-[10px]"
