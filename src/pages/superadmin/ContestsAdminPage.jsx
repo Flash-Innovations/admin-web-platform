@@ -205,6 +205,7 @@ export function ContestsAdminPage() {
   }, [selectedList]);
 
   const toggleQuestionSelection = (q) => {
+    if (!q || !q.id) return;
     setSelectedQuestions((prev) => {
       const next = { ...prev };
       const qId = q.id;
@@ -489,6 +490,7 @@ export function ContestsAdminPage() {
           {["ALL", "LIVE", "UPCOMING", "COMPLETED", "DRAFT"].map((st) => (
             <button
               key={st}
+              type="button"
               onClick={() => setFilterStatus(st)}
               className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${filterStatus === st
                   ? "bg-indigo-600 text-white shadow-xs"
@@ -616,6 +618,7 @@ export function ContestsAdminPage() {
                 <div className="mt-5 pt-3 border-t border-slate-100 flex items-center justify-between gap-2">
                   <div className="flex items-center gap-1.5">
                     <button
+                      type="button"
                       onClick={() => handleOpenContestQuestions(c)}
                       className="px-2.5 py-1 text-xs font-bold text-indigo-700 bg-indigo-50 hover:bg-indigo-100 rounded-lg transition-colors flex items-center gap-1 cursor-pointer"
                       title="Inspect Questions"
@@ -626,6 +629,7 @@ export function ContestsAdminPage() {
 
                     {c.status === "DRAFT" && (
                       <button
+                        type="button"
                         onClick={() => handleToggleStatus(c, "PUBLISHED")}
                         className="px-2.5 py-1 text-xs font-bold text-amber-700 bg-amber-50 hover:bg-amber-100 rounded-lg transition-colors cursor-pointer"
                         title="Publish Contest to Students"
@@ -635,6 +639,7 @@ export function ContestsAdminPage() {
                     )}
                     {c.status !== "LIVE" && c.status !== "DRAFT" && (
                       <button
+                        type="button"
                         onClick={() => handleToggleStatus(c, "LIVE")}
                         className="px-2.5 py-1 text-xs font-bold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 rounded-lg transition-colors cursor-pointer"
                         title="Start Contest Now"
@@ -644,6 +649,7 @@ export function ContestsAdminPage() {
                     )}
                     {c.status === "LIVE" && (
                       <button
+                        type="button"
                         onClick={() => handleToggleStatus(c, "COMPLETED")}
                         className="px-2.5 py-1 text-xs font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors cursor-pointer"
                         title="Conclude Contest"
@@ -654,6 +660,7 @@ export function ContestsAdminPage() {
                   </div>
 
                   <button
+                    type="button"
                     onClick={() => handleDeleteContest(c._id || c.id)}
                     className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer"
                     title="Delete Contest"
@@ -894,6 +901,7 @@ export function ContestsAdminPage() {
                     />
                     {qSearch && (
                       <button
+                        type="button"
                         onClick={() => setQSearch("")}
                         className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
                       >

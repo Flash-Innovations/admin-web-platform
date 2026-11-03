@@ -13,16 +13,13 @@ const API_BASE_URL = (!rawApiUrl || isLegacyHost)
   : rawApiUrl;
 
 const rawAdminApiUrl = (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.VITE_ADMIN_API_URL) || '';
-const ADMIN_API_BASE_URL = rawAdminApiUrl || API_BASE_URL;
+const ADMIN_API_BASE_URL = API_BASE_URL;
 
 /**
  * Resolves the appropriate base service URL for the given endpoint.
- * Question Bank requests route to the Unified Flash Backend (port 5001).
+ * Question Bank and Admin requests route cleanly to the Unified Flash Backend (port 5001).
  */
 export function getEndpointBaseUrl(endpoint) {
-  if (endpoint && (endpoint.startsWith('/api/super-admin/questions') || endpoint.startsWith('/api/admin/questions'))) {
-    return ADMIN_API_BASE_URL;
-  }
   return API_BASE_URL;
 }
 
@@ -163,28 +160,53 @@ async function request(endpoint, options = {}) {
     throw err;
   }
 
-  // Handle 401 Unauthorized: ONLY for authenticated requests, NEVER for login requests
+  // Handle 401 Unauthorized: Only clear session and redirect for true CORE authentication validation failures.
+  // NEVER log out on Question Bank queries, contest builders, or auxiliary microservice calls that fail upstream.
+  const isCoreAuthEndpoint = (ep) => {
+    if (!ep || typeof ep !== 'string') return false;
+    const lower = ep.toLowerCase();
+    return (
+      lower.includes('/api/auth/me') ||
+      lower.includes('/api/b2c/auth/me') ||
+      lower.includes('/api/b2c/admin/overview') ||
+      lower.includes('/api/auth/validate-token')
+    );
+  };
+
+  const isQuestionBankOrFeatureEndpoint = (ep) => {
+    if (!ep || typeof ep !== 'string') return false;
+    const lower = ep.toLowerCase();
+    return (
+      lower.includes('/questions') ||
+      lower.includes('/topics') ||
+      lower.includes('/contests') ||
+      lower.includes('/gd')
+    );
+  };
+
   if (response.status === 401 && !isAuth) {
-    try {
-      localStorage.removeItem('sips_token');
-      localStorage.removeItem('sips_auth_user');
-    } catch (e) {
-      // ignore
-    }
+    // If it's a question bank or feature endpoint, do NOT wipe the admin session
+    if (!isQuestionBankOrFeatureEndpoint(endpoint) && isCoreAuthEndpoint(endpoint)) {
+      try {
+        localStorage.removeItem('sips_token');
+        localStorage.removeItem('sips_auth_user');
+      } catch (e) {
+        // ignore
+      }
 
-    if (typeof window !== 'undefined') {
-      const currentPath = window.location.pathname;
-      const isPublicRoute =
-        currentPath === '/' ||
-        currentPath === '' ||
-        currentPath === '/login' ||
-        currentPath === '/onboard' ||
-        currentPath === '/register';
+      if (typeof window !== 'undefined') {
+        const currentPath = window.location.pathname;
+        const isPublicRoute =
+          currentPath === '/' ||
+          currentPath === '' ||
+          currentPath === '/login' ||
+          currentPath === '/onboard' ||
+          currentPath === '/register';
 
-      // Only redirect if accessing a protected route with an expired/invalid session
-      // Never redirect from public routes
-      if (!isPublicRoute && token) {
-        window.location.href = '/login';
+        // Only redirect if accessing a protected route with an expired/invalid session
+        if (!isPublicRoute && token) {
+          window.location.href = '/login';
+        }
       }
     }
   }
@@ -282,25 +304,7 @@ export const api = {
     }
 
     if (response.status === 401) {
-      try {
-        localStorage.removeItem('sips_token');
-        localStorage.removeItem('sips_auth_user');
-      } catch (e) {
-        // ignore
-      }
-      if (typeof window !== 'undefined') {
-        const currentPath = window.location.pathname;
-        const isPublicRoute =
-          currentPath === '/' ||
-          currentPath === '' ||
-          currentPath === '/login' ||
-          currentPath === '/onboard' ||
-          currentPath === '/register';
-        if (!isPublicRoute && token) {
-          window.location.href = '/login';
-        }
-      }
-      const err = new Error('Your session has expired. Please sign in again.');
+      const err = new Error('You do not have permission to download this file.');
       err.status = 401;
       throw err;
     }
