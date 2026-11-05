@@ -23,6 +23,7 @@ const GdAdminPage = lazyNamed(() => import("../pages/superadmin/GdAdminPage"), "
 const GlobalQuestionBankPage = lazyNamed(() => import("../pages/superadmin/GlobalQuestionBankPage"), "GlobalQuestionBankPage");
 const ReportsGeneratorPage = lazyNamed(() => import("../pages/superadmin/ReportsGeneratorPage"), "ReportsGeneratorPage");
 const StoreManagementPage = lazyNamed(() => import("../pages/superadmin/StoreManagementPage"), "StoreManagementPage");
+const BetaControlPage = lazyNamed(() => import("../pages/superadmin/BetaControlPage"), "BetaControlPage");
 
 import { PageSkeleton } from "../components/common/LoadingSkeleton";
 
@@ -56,6 +57,8 @@ export function AppRoutes() {
         <Route path="/questions" element={<Navigate to="/super-admin/questions" replace />} />
         <Route path="/reports" element={<Navigate to="/super-admin/reports" replace />} />
         <Route path="/store" element={<Navigate to="/super-admin/store" replace />} />
+        <Route path="/beta" element={<Navigate to="/super-admin/beta" replace />} />
+        <Route path="/beta-control" element={<Navigate to="/super-admin/beta" replace />} />
         <Route path="/approvals" element={<Navigate to="/super-admin/dashboard" replace />} />
         <Route path="/institutions" element={<Navigate to="/super-admin/dashboard" replace />} />
         <Route path="/super-admin/approvals" element={<Navigate to="/super-admin/dashboard" replace />} />
@@ -65,6 +68,8 @@ export function AppRoutes() {
         <Route element={<ProtectedRoute allowedRoles={["super_admin"]} />}>
           <Route element={<DashboardLayout />}>
             <Route path="/super-admin/dashboard" element={<SuperAdminDashboard />} />
+            <Route path="/super-admin/beta" element={<BetaControlPage />} />
+            <Route path="/super_admin/beta" element={<BetaControlPage />} />
             <Route path="/super-admin/contests" element={<ContestsAdminPage />} />
             <Route path="/super-admin/gd" element={<GdAdminPage />} />
             <Route path="/super-admin/questions" element={<GlobalQuestionBankPage />} />

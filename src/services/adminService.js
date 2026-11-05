@@ -112,6 +112,34 @@ export const adminService = {
   },
 
   /**
+   * Closed Beta Launch Command Overview
+   */
+  async getBetaOverview() {
+    return api.get("/api/b2c/beta/admin/overview");
+  },
+
+  /**
+   * Set Active Beta Phase (1, 2, 3, 4, 0 for Public)
+   */
+  async setBetaPhase(phase) {
+    return api.post("/api/b2c/beta/admin/set-phase", { phase });
+  },
+
+  /**
+   * Update Beta Feature Flags
+   */
+  async updateBetaFeatureFlags(flags) {
+    return api.patch("/api/b2c/beta/admin/feature-flags", { flags });
+  },
+
+  /**
+   * Create Beta Invite Code
+   */
+  async createBetaInviteCode(codeData) {
+    return api.post("/api/b2c/beta/admin/invite-code", codeData);
+  },
+
+  /**
    * Group Discussions: Delete a GD room
    */
   async deleteGdRoom(id) {
