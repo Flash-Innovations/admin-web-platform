@@ -72,3 +72,4 @@ export const arenaAdminService = {
 };
 
 export default arenaAdminService;
+
