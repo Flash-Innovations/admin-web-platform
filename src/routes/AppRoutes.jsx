@@ -24,6 +24,7 @@ const GlobalQuestionBankPage = lazyNamed(() => import("../pages/superadmin/Globa
 const ReportsGeneratorPage = lazyNamed(() => import("../pages/superadmin/ReportsGeneratorPage"), "ReportsGeneratorPage");
 const StoreManagementPage = lazyNamed(() => import("../pages/superadmin/StoreManagementPage"), "StoreManagementPage");
 const BetaControlPage = lazyNamed(() => import("../pages/superadmin/BetaControlPage"), "BetaControlPage");
+const TournamentAdminPage = lazyNamed(() => import("../pages/superadmin/TournamentAdminPage"), "TournamentAdminPage");
 
 import { PageSkeleton } from "../components/common/LoadingSkeleton";
 
@@ -52,6 +53,7 @@ export function AppRoutes() {
 
         {/* Direct shortcuts */}
         <Route path="/dashboard" element={<Navigate to="/super-admin/dashboard" replace />} />
+        <Route path="/arena" element={<Navigate to="/super-admin/arena" replace />} />
         <Route path="/contests" element={<Navigate to="/super-admin/contests" replace />} />
         <Route path="/gd" element={<Navigate to="/super-admin/gd" replace />} />
         <Route path="/questions" element={<Navigate to="/super-admin/questions" replace />} />
@@ -75,9 +77,11 @@ export function AppRoutes() {
             <Route path="/super-admin/questions" element={<GlobalQuestionBankPage />} />
             <Route path="/super-admin/reports" element={<ReportsGeneratorPage />} />
             <Route path="/super-admin/store" element={<StoreManagementPage />} />
+            <Route path="/super-admin/arena" element={<TournamentAdminPage />} />
 
             {/* Route aliases */}
             <Route path="/super_admin/dashboard" element={<SuperAdminDashboard />} />
+            <Route path="/super_admin/arena" element={<TournamentAdminPage />} />
             <Route path="/super_admin/contests" element={<ContestsAdminPage />} />
             <Route path="/super_admin/gd" element={<GdAdminPage />} />
             <Route path="/super_admin/questions" element={<GlobalQuestionBankPage />} />

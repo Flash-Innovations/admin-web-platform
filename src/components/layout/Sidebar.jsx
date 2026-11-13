@@ -11,7 +11,8 @@ import {
   ChevronRight,
   ShieldCheck,
   ShieldAlert,
-  ShoppingBag
+  ShoppingBag,
+  Swords
 } from "lucide-react";
 import Avatar from "../common/Avatar";
 import { useAuth } from "../../context/AuthContext";
@@ -23,6 +24,7 @@ export function Sidebar({ isCollapsed, setIsCollapsed, mobileOpen, setMobileOpen
 
   const adminLinks = [
     { to: "/super-admin/dashboard", label: "Command Center", icon: LayoutDashboard },
+    { to: "/super-admin/arena", label: "1v1 Esports Arena", icon: Swords, badge: "512" },
     { to: "/super-admin/beta", label: "Beta Control", icon: ShieldAlert, badge: "Launch" },
     { to: "/super-admin/contests", label: "Global Contests", icon: Trophy, badge: "Live" },
     { to: "/super-admin/gd", label: "GD Arena", icon: MessageSquare },
