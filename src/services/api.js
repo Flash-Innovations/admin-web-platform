@@ -6,11 +6,11 @@
 const rawApiUrl = (typeof import.meta !== 'undefined' && import.meta.env && (import.meta.env.VITE_B2C_API_URL || import.meta.env.VITE_API_URL)) || '';
 const isLegacyHost = rawApiUrl.includes('sips-flash-backend');
 
-const API_BASE_URL = (!rawApiUrl || isLegacyHost)
+const API_BASE_URL = ((!rawApiUrl || isLegacyHost)
   ? (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
       ? 'http://localhost:5001'
       : 'https://student-b2c-backend.onrender.com')
-  : rawApiUrl;
+  : rawApiUrl).replace(/\/+$/, '');
 
 const rawAdminApiUrl = (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.VITE_ADMIN_API_URL) || '';
 const ADMIN_API_BASE_URL = API_BASE_URL;
@@ -125,8 +125,10 @@ export const isAuthEndpoint = (endpoint, options = {}) => {
 };
 
 async function request(endpoint, options = {}) {
-  const baseUrl = getEndpointBaseUrl(endpoint);
-  const url = `${baseUrl}${endpoint}`;
+  const rawBase = getEndpointBaseUrl(endpoint) || '';
+  const baseUrl = rawBase.replace(/\/+$/, '');
+  const cleanPath = (endpoint || '').startsWith('/') ? endpoint : `/${endpoint}`;
+  const url = baseUrl ? `${baseUrl}${cleanPath}` : cleanPath;
   const token = getAuthToken();
   const isAuth = isAuthEndpoint(endpoint, options);
 
